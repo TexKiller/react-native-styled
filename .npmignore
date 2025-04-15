@@ -1,0 +1,14 @@
+.vscode
+.yarn
+node_modules
+src
+tests
+.gitignore
+.DS_Store
+.npmignore
+.prettierrc.json
+.yarnrc.yml
+eslint.config.mjs
+jest.config.js
+tsconfig.json
+yarn.lock
