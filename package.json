@@ -1,0 +1,47 @@
+{
+  "name": "react-native-styled",
+  "version": "0.0.0",
+  "packageManager": "yarn@4.1.1",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "prepublishOnly": "rimraf dist && tsc",
+    "np": "git remote rm origin && (np --publish false --cleanup false || echo Error on np) && git remote add origin git@texkiller-github:TexKiller/react-native-styled.git && git push --follow-tags --set-upstream origin master",
+    "test": "node tests/run.js",
+    "npmp": "np"
+  },
+  "dependencies": {
+    "react-native-fast-shadow": "~0.1.1",
+    "react-native-reanimated": "3.15.1",
+    "rn-css": "^1.11.6"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.0.0-0",
+    "@eslint/js": "^9.24.0",
+    "@types/jest": "^29.0.0",
+    "@types/react": "*",
+    "chokidar": "^3.5.3",
+    "dotenv": "^16.4.5",
+    "eslint": "^8.21.0",
+    "jest": "29.7.0",
+    "jest-pnp-resolver": "^1.2.3",
+    "jest-tsd-transform": "^1.1.1",
+    "np": "^10.2.0",
+    "prettier": "^3.3.3",
+    "react": "*",
+    "react-native": "*",
+    "rimraf": "^6.0.1",
+    "typescript": "^5.2.2",
+    "typescript-eslint": "^8.29.1"
+  },
+  "peerDependencies": {
+    "@babel/core": "^7.0.0-0",
+    "react": "*",
+    "react-native": "*"
+  },
+  "sideEffects": false,
+  "resolutions": {
+    "add-custom-resource": "github:TexKiller/add-custom-resource",
+    "jest-resolve-dependencies": "github:TexKiller/jest-resolve-dependencies"
+  }
+}
