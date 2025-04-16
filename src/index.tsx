@@ -28,9 +28,11 @@ import { fixFontStyle } from "./utils/fonts";
 import { camel2kebab } from "./utils/string";
 import { useTemplated } from "./utils/templated";
 
+type TemplatedParameters = Parameters<ReturnType<typeof rnCSS>>;
+
 type StyledComponent<P> = {
-  (...args: Parameters<ReturnType<typeof rnCSS>>[]): StyledComponent<P>;
-  (...args: Parameters<ReturnType<typeof rnCSS>>): StyledComponent<P>;
+  (...args: TemplatedParameters[]): StyledComponent<P>;
+  (...args: TemplatedParameters): StyledComponent<P>;
   (props: P & { css?: ReturnType<typeof css> }): React.ReactNode;
 };
 
@@ -158,7 +160,7 @@ const styled = <P extends { style?: S }, S>(
             applyRnCSS(
               C,
               (O) => (OriginalComponent = O || OriginalComponent),
-            )(...(args[0] as Parameters<ReturnType<typeof applyRnCSS>>)),
+            )(...(args[0] as TemplatedParameters)),
           )(...args.slice(1));
         }
       }
@@ -166,14 +168,25 @@ const styled = <P extends { style?: S }, S>(
         applyRnCSS(
           C,
           (O) => (OriginalComponent = O || OriginalComponent),
-        )(...(args as Parameters<ReturnType<typeof applyRnCSS>>)),
+        )(...(args as TemplatedParameters)),
       );
     }
     if (args[0]?.css) {
-      const StyledOriginalComponent = applyRnCSS(
-        C,
-        (O) => (OriginalComponent = O || OriginalComponent),
-      )(...(args[0].css as Parameters<ReturnType<typeof applyRnCSS>>));
+      const StyledOriginalComponent = React.useMemo(
+        () =>
+          args[0].css[0][0] instanceof Array
+            ? styled(
+                applyRnCSS(
+                  C,
+                  (O) => (OriginalComponent = O || OriginalComponent),
+                )(...(args[0].css[0] as TemplatedParameters)),
+              )(...(args[0].css.slice(1) as TemplatedParameters[]))
+            : applyRnCSS(
+                C,
+                (O) => (OriginalComponent = O || OriginalComponent),
+              )(...(args[0].css as TemplatedParameters)),
+        [C, OriginalComponent, args[0].css],
+      );
       return <StyledOriginalComponent {...args[0]} />;
     }
     return <C {...(args[0] || {})} />;
@@ -202,7 +215,7 @@ styled.TouchableOpacity = styled(RNTouchableOpacity);
 styled.TouchableWithoutFeedback = styled(RNTouchableWithoutFeedback);
 styled.View = styled(RNView);
 
-export const css = (...args: Parameters<ReturnType<typeof rnCSS>>) => args;
+export const css = (...args: TemplatedParameters) => args;
 
 export default styled;
 
@@ -210,7 +223,7 @@ function applyRnCSS<P extends { style?: S }, S>(
   C: React.FunctionComponent<P>,
   component: (C?: React.ComponentType<P>) => React.ComponentType<P>,
 ) {
-  return (...args: Parameters<ReturnType<typeof rnCSS>>) => {
+  return (...args: TemplatedParameters) => {
     const templated = useTemplated(
       args,
       Platform.OS,
