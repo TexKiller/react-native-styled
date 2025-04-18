@@ -185,7 +185,14 @@ const styled = <P extends { style?: S }, S>(
                 C,
                 (O) => (OriginalComponent = O || OriginalComponent),
               )(...(args[0].css as TemplatedParameters)),
-        [C, OriginalComponent, args[0].css],
+        [
+          C,
+          OriginalComponent,
+          args[0].css
+            .flat()
+            .flat()
+            .map((e: any) => (typeof e === "function" ? e.toString() : e)),
+        ],
       );
       return <StyledOriginalComponent {...args[0]} />;
     }
