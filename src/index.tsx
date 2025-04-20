@@ -30,7 +30,7 @@ import { useTemplated } from "./utils/templated";
 
 type TemplatedParameters = Parameters<ReturnType<typeof rnCSS>>;
 
-type StyledComponent<P> = {
+export type StyledComponent<P> = {
   (...args: TemplatedParameters[]): StyledComponent<P>;
   (...args: TemplatedParameters): StyledComponent<P>;
   (props: P & { css?: ReturnType<typeof css> }): React.ReactNode;
