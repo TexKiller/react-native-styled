@@ -91,7 +91,7 @@ const styled = <P extends { style?: S }, S>(
             .replace(/webcalc/g, "calc")
             .replace(/webvar/g, "var")
             .replace(
-              /(?<=:[^;]*)(\b\d+(\.\d+)?)§([a-z]+\b|%)/gi,
+              /(\b\d+(\.\d+)?)§([a-z]+\b|%)/gi,
               (_, a, _b, c) => `${a}${c}`,
             );
         }
