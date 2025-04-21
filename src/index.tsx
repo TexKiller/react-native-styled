@@ -101,6 +101,7 @@ const styled = <P extends { style?: S }, S>(
           !key.startsWith("webactive") &&
           !key.startsWith("webfocus") &&
           !key.startsWith("weboutline") &&
+          !key.startsWith("webbackground") &&
           !key.startsWith("-")
         ) {
           continue;
@@ -115,6 +116,8 @@ const styled = <P extends { style?: S }, S>(
           focus += style[key] + "§";
         } else if (key.startsWith("weboutline")) {
           style[key.replace(/^weboutline/, "outline")] = style[key];
+        } else if (key.startsWith("webbackground")) {
+          style[key.replace(/^webbackground/, "background")] = style[key];
         }
         delete style[key];
       }
