@@ -94,7 +94,9 @@ const styled = <P extends { style?: S }, S>(
             .replace(
               /(\b\d+(\.\d+)?)§([a-z]+\b|%)/gi,
               (_, a, _b, c) => `${a}${c}`,
-            );
+            )
+            .replace(/weboutline/g, "outline")
+            .replace(/webbackground/g, "background");
         }
         if (
           !key.startsWith("webhover") &&
