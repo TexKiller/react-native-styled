@@ -100,7 +100,11 @@ const styled = <P extends { style?: S }, S>(
           continue;
         }
         if (key.startsWith("-")) {
-          variables += camel2kebab(key) + ": " + style[key] + ";";
+          variables +=
+            camel2kebab(key) +
+            ": " +
+            style[key].substring(1, style[key].length - 1) +
+            ";\n";
         } else if (key.startsWith("webhover")) {
           hover += style[key] + "§";
         } else if (key.startsWith("webactive")) {
