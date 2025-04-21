@@ -105,7 +105,7 @@ const styled = <P extends { style?: S }, S>(
             ": " +
             (typeof style[key] === "string"
               ? style[key].replace(
-                  /(\b\d+(\.\d+)?) ([a-z]+\b|%)/gi,
+                  /(\b\d+(\.\d+)?)§([a-z]+\b|%)/gi,
                   (_, a, _b, c) => `${a}${c}`,
                 )
               : style[key]) +
