@@ -103,7 +103,9 @@ const styled = <P extends { style?: S }, S>(
           variables +=
             camel2kebab(key) +
             ": " +
-            style[key].substring(1, style[key].length - 1) +
+            (typeof style[key] === "string"
+              ? style[key].substring("VALUE:".length)
+              : style[key]) +
             ";\n";
         } else if (key.startsWith("webhover")) {
           hover += style[key] + "§";
