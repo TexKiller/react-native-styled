@@ -222,7 +222,24 @@ styled.TouchableOpacity = styled(RNTouchableOpacity);
 styled.TouchableWithoutFeedback = styled(RNTouchableWithoutFeedback);
 styled.View = styled(RNView);
 
-export const css = (...args: TemplatedParameters) => args;
+export const css = (...args: TemplatedParameters | TemplatedParameters[]) => {
+  if (args[0]?.[0] instanceof Array) {
+    const first = args.shift() as TemplatedParameters;
+    return [
+      (args as TemplatedParameters[]).reduce(
+        (acc, curr) => {
+          acc[acc.length - 1] += curr[0][0];
+          acc.push(...curr[0].slice(1));
+          return acc;
+        },
+        [...first[0]],
+      ) as any,
+      ...first.slice(1),
+      ...(args as TemplatedParameters[]).map((c) => c.slice(1)).flat(),
+    ] as TemplatedParameters;
+  }
+  return args as TemplatedParameters;
+};
 
 export default styled;
 
