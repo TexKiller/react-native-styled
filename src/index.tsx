@@ -86,7 +86,9 @@ const styled = <P extends { style?: S }, S>(
       ? props.style
       : [props.style]) {
       for (const key in style) {
-        style[key] = style[key].replace(/webcalc/g, "calc");
+        if (typeof style[key] === "string") {
+          style[key] = style[key].replace(/webcalc/g, "calc");
+        }
         if (
           !key.startsWith("webhover") &&
           !key.startsWith("webactive") &&
