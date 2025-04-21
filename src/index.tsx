@@ -89,7 +89,11 @@ const styled = <P extends { style?: S }, S>(
         if (typeof style[key] === "string") {
           style[key] = style[key]
             .replace(/webcalc/g, "calc")
-            .replace(/webvar/g, "var");
+            .replace(/webvar/g, "var")
+            .replace(
+              /(?<=:[^;]*)(\b\d+(\.\d+)?)§([a-z]+\b|%)/gi,
+              (_, a, _b, c) => `${a}${c}`,
+            );
         }
         if (
           !key.startsWith("webhover") &&
@@ -100,16 +104,7 @@ const styled = <P extends { style?: S }, S>(
           continue;
         }
         if (key.startsWith("-")) {
-          variables +=
-            camel2kebab(key) +
-            ": " +
-            (typeof style[key] === "string"
-              ? style[key].replace(
-                  /(\b\d+(\.\d+)?)§([a-z]+\b|%)/gi,
-                  (_, a, _b, c) => `${a}${c}`,
-                )
-              : style[key]) +
-            ";\n";
+          variables += camel2kebab(key) + ": " + style[key] + ";\n";
         } else if (key.startsWith("webhover")) {
           hover += style[key] + "§";
         } else if (key.startsWith("webactive")) {
