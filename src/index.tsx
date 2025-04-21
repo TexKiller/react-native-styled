@@ -87,7 +87,9 @@ const styled = <P extends { style?: S }, S>(
       : [props.style]) {
       for (const key in style) {
         if (typeof style[key] === "string") {
-          style[key] = style[key].replace(/webcalc/g, "calc");
+          style[key] = style[key]
+            .replace(/webcalc/g, "calc")
+            .replace(/webvar/g, "var");
         }
         if (
           !key.startsWith("webhover") &&

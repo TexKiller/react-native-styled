@@ -21,8 +21,9 @@ export const useTemplated = (
     }
     if (platform === "web") {
       // on web only add a dash to variables
-      chunks[i] = chunks[i].replace(/--/g, "---").replace(/var\(-/g, "var(");
-      // and rename hover, active, calc and outline
+      chunks[i] = chunks[i].replace(/--/g, "---");
+      // and rename var, hover, active, calc and outline
+      chunks[i] = chunks[i].replace(/var\(-/g, "webvar(");
       chunks[i] = chunks[i].replace(
         /&:hover\s*{([^}]*)}/g,
         (_, c) => `webhover${++hoverCount}: ${c.replace(/;/g, "§")};`,
