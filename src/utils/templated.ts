@@ -25,7 +25,7 @@ export const useTemplated = (
       // and separate numbers from units
       chunks[i] = chunks[i].replace(
         /(\b\d+(\.\d+)?)([a-z]+\b|%)/gi,
-        (_, a, b) => `${a} ${b}`,
+        (_, a, _b, c) => `${a} ${c}`,
       );
       // and rename var, hover, active, calc and outline
       chunks[i] = chunks[i].replace(/var\(-/g, "webvar(");
