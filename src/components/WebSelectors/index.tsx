@@ -10,33 +10,31 @@ const WebSelectors = ({
   OriginalComponent: React.ComponentType<any>;
   [k: string]: any;
 }) => {
-  const ref = React.useRef<typeof OriginalComponent>(null);
-  const [hash, setHash] = React.useState("");
-  React.useEffect(() => {
-    setHash((ref.current as any).className.split(" ").pop());
-  }, [setHash]);
-  (props as any).ref = ref;
+  const hash = React.useMemo(
+    () => "id" + Math.random().toString(36).substring(2, 15),
+    [],
+  );
   return (
     <>
-      <style>
+      <style id={hash}>
         {(variables &&
           `
-            .${hash} {
+            #${hash} + * {
               ${variables}
             }
           `) +
           (hover &&
             `
-              .${hash}:hover {
+              #${hash} + *:hover {
                 ${hover}
               }
             `) +
           (active &&
             `
-            .${hash}:active {
-              ${active}
-            }
-          `)}
+              #${hash} + *:active {
+                ${active}
+              }
+            `)}
       </style>
       <OriginalComponent {...props} />
     </>
