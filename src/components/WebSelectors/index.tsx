@@ -5,6 +5,7 @@ const WebSelectors = ({
   variables,
   hover,
   active,
+  focus,
   ...props
 }: {
   OriginalComponent: React.ComponentType<any>;
@@ -62,6 +63,22 @@ const WebSelectors = ({
               #${hash} + style + style + style + style + style + style + style + style + *:active:not(style),
               {
                 ${active}
+              }
+            `) +
+          (focus &&
+            `
+              #${hash} + *:focus:not(style),
+              #${hash} + style + *:focus:not(style),
+              #${hash} + style + style + *:focus:not(style),
+              #${hash} + style + style + style + *:focus:not(style),
+              #${hash} + style + style + style + style + *:focus:not(style),
+              #${hash} + style + style + style + style + style + *:focus:not(style),
+              #${hash} + style + style + style + style + style + style + *:focus:not(style),
+              #${hash} + style + style + style + style + style + style + style + *:focus:not(style),
+              #${hash} + style + style + style + style + style + style + style + style + *:focus:not(style),
+              #${hash} + style + style + style + style + style + style + style + style + style + *:focus:not(style),
+              {
+                ${focus}
               }
             `)}
       </style>

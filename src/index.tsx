@@ -82,6 +82,7 @@ const styled = <P extends { style?: S }, S>(
     let variables = "";
     let hover = "";
     let active = "";
+    let focus = "";
     for (const style of props.style instanceof Array
       ? props.style
       : [props.style]) {
@@ -98,6 +99,7 @@ const styled = <P extends { style?: S }, S>(
         if (
           !key.startsWith("webhover") &&
           !key.startsWith("webactive") &&
+          !key.startsWith("webfocus") &&
           !key.startsWith("weboutline") &&
           !key.startsWith("-")
         ) {
@@ -109,6 +111,8 @@ const styled = <P extends { style?: S }, S>(
           hover += style[key] + "§";
         } else if (key.startsWith("webactive")) {
           active += style[key] + "§";
+        } else if (key.startsWith("webfocus")) {
+          focus += style[key] + "§";
         } else if (key.startsWith("weboutline")) {
           style[key.replace(/^weboutline/, "outline")] = style[key];
         }
@@ -125,6 +129,10 @@ const styled = <P extends { style?: S }, S>(
             .replace(/---/g, "--")}
           active={active
             .substring(0, active.length - 1)
+            .replace(/§/g, " !important;")
+            .replace(/---/g, "--")}
+          focus={focus
+            .substring(0, focus.length - 1)
             .replace(/§/g, " !important;")
             .replace(/---/g, "--")}
           {...props}
