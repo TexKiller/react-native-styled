@@ -22,8 +22,11 @@ export const useTemplated = (
     if (platform === "web") {
       // on web only add a dash to variables
       chunks[i] = chunks[i].replace(/--/g, "---");
-      // and prefix variable values with #
-      chunks[i] = chunks[i].replace(/(---[^)]+:)/gi, (_, c) => `${c}#`);
+      // and separate numbers from units
+      chunks[i] = chunks[i].replace(
+        /(\b\d+(\.\d+)?)([a-z]+\b|%)/gi,
+        (_, a, b) => `${a} ${b}`,
+      );
       // and rename var, hover, active, calc and outline
       chunks[i] = chunks[i].replace(/var\(-/g, "webvar(");
       chunks[i] = chunks[i].replace(
