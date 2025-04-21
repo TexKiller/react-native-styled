@@ -30,10 +30,25 @@ import { useTemplated } from "./utils/templated";
 
 type TemplatedParameters = Parameters<ReturnType<typeof rnCSS>>;
 
-export type StyledComponent<P> = {
+export type CVA<P extends Record<string, any>> = {
+  variants?: {
+    [k in keyof P]?: {
+      [j in P[k]]?: TemplatedParameters | TemplatedParameters[];
+    };
+  };
+  compoundVariants?: ({ [k in keyof P]?: P[k] | P[k][] } & {
+    css: TemplatedParameters | TemplatedParameters[];
+  })[];
+  defaultVariants?: Partial<P>;
+};
+
+export type StyledComponent<P extends Record<string, any>> = {
   (...args: TemplatedParameters[]): StyledComponent<P>;
   (...args: TemplatedParameters): StyledComponent<P>;
-  (props: P & { css?: ReturnType<typeof css> }): React.ReactNode;
+  (
+    props: P & { css?: ReturnType<typeof css>; cva?: Partial<CVA<P>> },
+  ): React.ReactNode;
+  cva: (arg: CVA<P>) => void;
 };
 
 const styled = <P extends { style?: S }, S>(
@@ -150,46 +165,80 @@ const styled = <P extends { style?: S }, S>(
       </ShadowedView>
     );
   };
-  return (...args: any[]): any => {
+  let cva: CVA<P> = {};
+  const styledComponent = (...args: any[]): any => {
     if (args[0] instanceof Array) {
-      if (args[0][0] instanceof Array) {
-        if (args.length === 1) {
-          args = args[0];
-        } else {
-          return styled(
-            applyRnCSS(
-              C,
-              (O) => (OriginalComponent = O || OriginalComponent),
-            )(...(args[0] as TemplatedParameters)),
-          )(...args.slice(1));
-        }
-      }
-      return styled(
+      const newStyledComponent = styled(
         applyRnCSS(
           C,
           (O) => (OriginalComponent = O || OriginalComponent),
-        )(...(args as TemplatedParameters)),
+        )(...css(...args)),
+      );
+      newStyledComponent.cva(cva);
+      return newStyledComponent;
+    }
+    const newCva: Required<CVA<P>> = {
+      variants: Object.assign(cva.variants || {}, args[0]?.cva?.variants || {}),
+      compoundVariants: [
+        ...(cva.compoundVariants || []),
+        ...(args[0]?.cva?.compoundVariants || []),
+      ],
+      defaultVariants: Object.assign(
+        cva.defaultVariants || {},
+        args[0]?.cva?.defaultVariants || {},
+      ),
+    };
+    const props: P = {
+      ...newCva.defaultVariants,
+      ...(args[0] || {}),
+    };
+    delete (props as any).css;
+    delete (props as any).cva;
+    let styles: TemplatedParameters = css(...(args[0]?.css || [[""], []]));
+    for (const prop in newCva.variants) {
+      const variant: TemplatedParameters | TemplatedParameters[] | undefined =
+        newCva.variants[prop]![props[prop]];
+      if (variant) {
+        styles = css(
+          styles,
+          ...(variant[0][0] instanceof Array
+            ? (variant as TemplatedParameters[])
+            : [variant as TemplatedParameters]),
+        );
+      }
+    }
+    for (const compoundVariant of newCva.compoundVariants) {
+      if (
+        (Object.keys(compoundVariant) as (keyof P)[]).find(
+          (prop) =>
+            prop !== "css" &&
+            ![
+              ...(compoundVariant[prop] instanceof Array
+                ? compoundVariant[prop]
+                : [compoundVariant[prop]]),
+            ].includes(props[prop]),
+        )
+      ) {
+        continue;
+      }
+      styles = css(
+        styles,
+        ...(compoundVariant.css[0][0] instanceof Array
+          ? (compoundVariant.css as TemplatedParameters[])
+          : [compoundVariant.css as TemplatedParameters]),
       );
     }
-    if (args[0]?.css) {
+    if (styles[0].find(Boolean)) {
       const StyledOriginalComponent = React.useMemo(
         () =>
-          args[0].css[0][0] instanceof Array
-            ? styled(
-                applyRnCSS(
-                  C,
-                  (O) => (OriginalComponent = O || OriginalComponent),
-                )(...(args[0].css[0] as TemplatedParameters)),
-              )(...(args[0].css.slice(1) as TemplatedParameters[]))
-            : applyRnCSS(
-                C,
-                (O) => (OriginalComponent = O || OriginalComponent),
-              )(...(args[0].css as TemplatedParameters)),
+          applyRnCSS(
+            C,
+            (O) => (OriginalComponent = O || OriginalComponent),
+          )(...styles),
         [
           C,
           OriginalComponent,
-          args[0].css
-            .flat()
+          styles
             .flat()
             .map((e: any) => (typeof e === "function" ? e.toString() : e)),
         ],
@@ -198,6 +247,10 @@ const styled = <P extends { style?: S }, S>(
     }
     return <C {...(args[0] || {})} />;
   };
+  styledComponent.cva = (arg: CVA<P>) => {
+    cva = arg;
+  };
+  return styledComponent;
 };
 
 styled.ActivityIndicator = styled(RNActivityIndicator);
