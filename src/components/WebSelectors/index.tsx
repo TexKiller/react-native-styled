@@ -29,7 +29,7 @@ const WebSelectors = ({
             #${hash} + style + style + style + style + style + style + *:not(style),
             #${hash} + style + style + style + style + style + style + style + *:not(style),
             #${hash} + style + style + style + style + style + style + style + style + *:not(style),
-            #${hash} + style + style + style + style + style + style + style + style + style + *:not(style),
+            #${hash} + style + style + style + style + style + style + style + style + style + *:not(style)
             {
               ${variables}
             }
@@ -45,7 +45,7 @@ const WebSelectors = ({
               #${hash} + style + style + style + style + style + style + *:hover:not(style),
               #${hash} + style + style + style + style + style + style + style + *:hover:not(style),
               #${hash} + style + style + style + style + style + style + style + style + *:hover:not(style),
-              #${hash} + style + style + style + style + style + style + style + style + style + *:hover:not(style),
+              #${hash} + style + style + style + style + style + style + style + style + style + *:hover:not(style)
               {
                 ${hover}
               }
@@ -60,7 +60,7 @@ const WebSelectors = ({
               #${hash} + style + style + style + style + style + *:active:not(style),
               #${hash} + style + style + style + style + style + style + *:active:not(style),
               #${hash} + style + style + style + style + style + style + style + *:active:not(style),
-              #${hash} + style + style + style + style + style + style + style + style + *:active:not(style),
+              #${hash} + style + style + style + style + style + style + style + style + *:active:not(style)
               {
                 ${active}
               }
@@ -76,7 +76,7 @@ const WebSelectors = ({
               #${hash} + style + style + style + style + style + style + *:focus:not(style),
               #${hash} + style + style + style + style + style + style + style + *:focus:not(style),
               #${hash} + style + style + style + style + style + style + style + style + *:focus:not(style),
-              #${hash} + style + style + style + style + style + style + style + style + style + *:focus:not(style),
+              #${hash} + style + style + style + style + style + style + style + style + style + *:focus:not(style)
               {
                 ${focus}
               }
