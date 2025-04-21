@@ -42,12 +42,15 @@ export type CVA<P extends Record<string, any>> = {
   defaultVariants?: Partial<P>;
 };
 
+type Props<P extends Record<string, any>> = {
+  css?: ReturnType<typeof css>;
+  cva?: Partial<CVA<P>>;
+};
+
 export type StyledComponent<P extends Record<string, any>> = {
   (...args: TemplatedParameters[]): StyledComponent<P>;
   (...args: TemplatedParameters): StyledComponent<P>;
-  (
-    props: P & { css?: ReturnType<typeof css>; cva?: Partial<CVA<P>> },
-  ): React.ReactNode;
+  (props: { [k in keyof (P & Props<P>)]: (P & Props<P>)[k] }): React.ReactNode;
   cva: (arg: CVA<P>) => void;
 };
 
