@@ -22,7 +22,7 @@ export const useTemplated = (
     if (platform === "web") {
       // on web only add a dash to variables
       chunks[i] = chunks[i].replace(/--/g, "---").replace(/var\(-/g, "var(");
-      // and rename hover, active and calc
+      // and rename hover, active, calc and outline
       chunks[i] = chunks[i].replace(
         /&:hover\s*{([^}]*)}/g,
         (_, c) => `webhover${++hoverCount}: ${c.replace(/;/g, "§")};`,
@@ -32,6 +32,10 @@ export const useTemplated = (
         (_, c) => `webactive${++activeCount}: ${c.replace(/;/g, "§")};`,
       );
       chunks[i] = chunks[i].replace(/calc\(/g, "webcalc(");
+      chunks[i] = chunks[i].replace(
+        /outline(-|:)/g,
+        (_, c) => `weboutline${c}`,
+      );
       continue;
     }
     chunks[i] = chunks[i].replace(

@@ -92,6 +92,7 @@ const styled = <P extends { style?: S }, S>(
         if (
           !key.startsWith("webhover") &&
           !key.startsWith("webactive") &&
+          !key.startsWith("weboutline") &&
           !key.startsWith("-")
         ) {
           continue;
@@ -100,8 +101,10 @@ const styled = <P extends { style?: S }, S>(
           variables += camel2kebab(key) + ": " + style[key] + ";";
         } else if (key.startsWith("webhover")) {
           hover += style[key] + "§";
-        } else {
+        } else if (key.startsWith("webactive")) {
           active += style[key] + "§";
+        } else if (key.startsWith("weboutline")) {
+          style[key.replace(/^weboutline/, "outline")] = style[key];
         }
         delete style[key];
       }
