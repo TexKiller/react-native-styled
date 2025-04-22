@@ -1,5 +1,6 @@
 import React from "react";
 import {
+  Keyboard,
   Platform,
   ActivityIndicator as RNActivityIndicator,
   Image as RNImage,
@@ -395,6 +396,7 @@ function applyRnCSS<P extends { style?: S }, S>(
         } else if (onFocus || onBlur) {
           ref = React.useRef<RNTextInput>(null);
           newOnPressIn = function (this: any, ...args: any[]) {
+            Keyboard.dismiss();
             ref!.current?.focus();
             return onPressIn?.apply(this, args);
           };
