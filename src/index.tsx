@@ -18,6 +18,8 @@ import {
   TouchableOpacity as RNTouchableOpacity,
   TouchableWithoutFeedback as RNTouchableWithoutFeedback,
   View as RNView,
+  TextInputProps,
+  TextProps,
 } from "react-native";
 import rnCSS, { SharedValue } from "rn-css";
 import ShadowedText from "./components/ShadowedText";
@@ -291,10 +293,12 @@ styled.ScrollView = styled(RNScrollView);
 styled.Switch = styled(RNSwitch);
 styled.RefreshControl = styled(RNRefreshControl);
 styled.SafeAreaView = styled(RNSafeAreaView);
-styled.Text = styled((props: any) => (
+styled.Text = styled((props: TextProps) => (
   <RNText {...props} style={fixFontStyle(props.style)} />
-));
-styled.TextInput = styled((props: any) => (
+))`
+  color: inherit;
+`;
+styled.TextInput = styled((props: TextInputProps) => (
   <RNTextInput {...props} style={fixFontStyle(props.style)} />
 ));
 styled.TouchableHighlight = styled(RNTouchableHighlight);
