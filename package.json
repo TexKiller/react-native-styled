@@ -1,6 +1,6 @@
 {
   "name": "css-native",
-  "version": "1.0.47",
+  "version": "1.0.48",
   "packageManager": "yarn@4.1.1",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
