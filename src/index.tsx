@@ -343,15 +343,26 @@ function applyRnCSS<P extends { style?: S }, S>(
           _onStartShouldSetResponder,
           ...rest
         } = props as any;
+        if (
+          !onPressIn &&
+          !onPressOut &&
+          ![RNPressable, RNTextInput].includes(component() as any)
+        ) {
+          return <C {...rest} onBlur={onBlur} onFocus={onFocus} />;
+        }
         if (component() === RNPressable) {
           component(RNView as any);
+        }
+        if ((component() as any) === RNTextInput) {
+          rest.onFocus = onFocus;
+          rest.onBlur = onBlur;
         }
         return (
           <RNPressable
             onPressIn={onPressIn}
             onPressOut={onPressOut}
-            onFocus={onFocus}
-            onBlur={onBlur}
+            onFocus={rest.onFocus ? undefined : onFocus}
+            onBlur={rest.onBlur ? undefined : onBlur}
           >
             <RNView>
               <C {...rest} />
