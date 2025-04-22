@@ -346,9 +346,11 @@ function applyRnCSS<P extends { style?: S }, S>(
         if (
           !onPressIn &&
           !onPressOut &&
-          ![RNPressable, RNTextInput].includes(component() as any)
+          ((!onFocus && !onBlur) ||
+            (component() as any) === RNTextInput ||
+            Platform.OS === "web")
         ) {
-          return <C {...rest} onBlur={onBlur} onFocus={onFocus} />;
+          return <C {...rest} onFocus={onFocus} onBlur={onBlur} />;
         }
         if (
           [
@@ -360,21 +362,38 @@ function applyRnCSS<P extends { style?: S }, S>(
         ) {
           component(RNView as any);
         }
-        if ((component() as any) === RNTextInput) {
+        let newOnPressIn = onPressIn;
+        let ref: React.RefObject<RNTextInput | null> | undefined;
+        if ((component() as any) === RNTextInput || Platform.OS === "web") {
           rest.onFocus = onFocus;
           rest.onBlur = onBlur;
+        } else if (onFocus || onBlur) {
+          ref = React.useRef<RNTextInput>(null);
+          newOnPressIn = function (this: any, ...args: any[]) {
+            ref!.current?.focus();
+            return onPressIn?.apply(this, args);
+          };
         }
         return (
-          <RNTouchableWithoutFeedback
-            onPressIn={onPressIn}
-            onPressOut={onPressOut}
-            onFocus={rest.onFocus ? undefined : onFocus}
-            onBlur={rest.onBlur ? undefined : onBlur}
-          >
+          <RNPressable onPressIn={newOnPressIn} onPressOut={onPressOut}>
+            {ref && (
+              <RNTextInput
+                ref={ref}
+                style={{
+                  width: 1,
+                  height: 1,
+                  position: "absolute",
+                  top: -999999,
+                }}
+                onFocus={onFocus}
+                onBlur={onBlur}
+                showSoftInputOnFocus={false}
+              />
+            )}
             <RNView>
               <C {...rest} />
             </RNView>
-          </RNTouchableWithoutFeedback>
+          </RNPressable>
         );
       })(...templated);
     }
