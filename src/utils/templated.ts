@@ -28,7 +28,7 @@ export const useTemplated = (
         /(?<=:[^;]*)(\b\d+(\.\d+)?)([a-z]+\b|%)/gi,
         (_, a, _b, c) => `${a}§${c}`,
       );
-      // and rename var, hover, active, focus, calc, outline and background
+      // and rename var, hover, active, focus, calc, outline, background and border
       chunks[i] = chunks[i].replace(/var\(-/g, "webvar(");
       chunks[i] = chunks[i].replace(
         /&:hover\s*{([^}]*)}/g,
@@ -51,6 +51,7 @@ export const useTemplated = (
         /background(-|:)/g,
         (_, c) => `webbackground${c}`,
       );
+      chunks[i] = chunks[i].replace(/border(-|:)/g, (_, c) => `webborder${c}`);
       continue;
     }
     chunks[i] = chunks[i].replace(

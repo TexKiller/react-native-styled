@@ -98,7 +98,8 @@ const styled = <P extends { style?: S }, S>(
               (_, a, _b, c) => `${a}${c}`,
             )
             .replace(/weboutline/g, "outline")
-            .replace(/webbackground/g, "background");
+            .replace(/webbackground/g, "background")
+            .replace(/webborder/g, "border");
         }
         if (
           !key.startsWith("webhover") &&
@@ -106,6 +107,7 @@ const styled = <P extends { style?: S }, S>(
           !key.startsWith("webfocus") &&
           !key.startsWith("weboutline") &&
           !key.startsWith("webbackground") &&
+          !key.startsWith("webborder") &&
           !key.startsWith("-")
         ) {
           continue;
@@ -122,6 +124,8 @@ const styled = <P extends { style?: S }, S>(
           style[key.replace(/^weboutline/, "outline")] = style[key];
         } else if (key.startsWith("webbackground")) {
           style[key.replace(/^webbackground/, "background")] = style[key];
+        } else if (key.startsWith("webborder")) {
+          style[key.replace(/^webborder/, "border")] = style[key];
         }
         delete style[key];
       }
