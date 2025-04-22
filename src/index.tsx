@@ -291,16 +291,16 @@ styled.Text = styled((props: TextProps) => (
   <RNText {...props} style={fixFontStyle(props.style)} />
 ));
 styled.TextInput = styled((props: TextInputProps) => {
-  const style: any[] = ((props as any).style = [
+  const style: any[] = [
     ...(props.style instanceof Array
       ? (props.style.length && props.style) || [{}]
       : [props.style || {}]),
-  ]);
+  ];
   style[0] = {
     ...style[0],
     width: style[0].width || "100%",
   };
-  return <RNTextInput {...props} style={fixFontStyle(props.style)} />;
+  return <RNTextInput {...props} style={fixFontStyle(style)} />;
 });
 styled.TouchableHighlight = styled(RNTouchableHighlight);
 styled.TouchableNativeFeedback = styled(RNTouchableNativeFeedback);
