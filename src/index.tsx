@@ -331,6 +331,7 @@ function applyRnCSS<P extends { style?: S }, S>(
     if (/&:(active|focus)/.test(args[0].join(","))) {
       return rnCSS((props: P) => {
         const {
+          onPress,
           onPressIn,
           onPressOut,
           onFocus,
@@ -344,6 +345,7 @@ function applyRnCSS<P extends { style?: S }, S>(
           ...rest
         } = props as any;
         if (
+          !onPress &&
           !onPressIn &&
           !onPressOut &&
           ((!onFocus && !onBlur) ||
@@ -375,7 +377,11 @@ function applyRnCSS<P extends { style?: S }, S>(
           };
         }
         return (
-          <RNPressable onPressIn={newOnPressIn} onPressOut={onPressOut}>
+          <RNPressable
+            onPress={onPress}
+            onPressIn={newOnPressIn}
+            onPressOut={onPressOut}
+          >
             {ref && (
               <RNTextInput
                 ref={ref}
