@@ -290,9 +290,15 @@ styled.SafeAreaView = styled(RNSafeAreaView);
 styled.Text = styled((props: TextProps) => (
   <RNText {...props} style={fixFontStyle(props.style)} />
 ));
-styled.TextInput = styled((props: TextInputProps) => (
-  <RNTextInput {...props} style={fixFontStyle(props.style)} />
-));
+styled.TextInput = styled((props: TextInputProps) => {
+  const style: any[] = ((props as any).style = [
+    ...(props.style instanceof Array
+      ? (props.style.length && props.style) || [{}]
+      : [props.style || {}]),
+  ]);
+  style[style.length - 1].width = style[style.length - 1].width || "100%";
+  return <RNTextInput {...props} style={fixFontStyle(props.style)} />;
+});
 styled.TouchableHighlight = styled(RNTouchableHighlight);
 styled.TouchableNativeFeedback = styled(RNTouchableNativeFeedback);
 styled.TouchableOpacity = styled(RNTouchableOpacity);
