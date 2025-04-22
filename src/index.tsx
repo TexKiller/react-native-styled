@@ -299,6 +299,8 @@ styled.TextInput = styled((props: TextInputProps) => {
   style[0] = {
     ...style[0],
     width: style[0].width || "100%",
+    boxSizing: style[0].boxSizing || "border-box",
+    flexShrink: style[0].flexShrink || 0,
   };
   return <RNTextInput {...props} style={fixFontStyle(style)} />;
 });
