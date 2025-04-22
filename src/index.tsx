@@ -345,14 +345,22 @@ function applyRnCSS<P extends { style?: S }, S>(
           ...rest
         } = props as any;
         if (
-          !onPress &&
-          !onPressIn &&
-          !onPressOut &&
-          ((!onFocus && !onBlur) ||
-            (component() as any) === RNTextInput ||
-            Platform.OS === "web")
+          Platform.OS === "web" ||
+          (!onPress &&
+            !onPressIn &&
+            !onPressOut &&
+            ((!onFocus && !onBlur) || (component() as any) === RNTextInput))
         ) {
-          return <C {...rest} onFocus={onFocus} onBlur={onBlur} />;
+          return (
+            <C
+              {...rest}
+              onPress={onPress}
+              onPressIn={onPressIn}
+              onPressOut={onPressOut}
+              onFocus={onFocus}
+              onBlur={onBlur}
+            />
+          );
         }
         if (
           [
@@ -366,7 +374,7 @@ function applyRnCSS<P extends { style?: S }, S>(
         }
         let newOnPressIn = onPressIn;
         let ref: React.RefObject<RNTextInput | null> | undefined;
-        if ((component() as any) === RNTextInput || Platform.OS === "web") {
+        if ((component() as any) === RNTextInput) {
           rest.onFocus = onFocus;
           rest.onBlur = onBlur;
         } else if (onFocus || onBlur) {
