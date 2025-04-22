@@ -328,7 +328,7 @@ function applyRnCSS<P extends { style?: S }, S>(
         ? (React.useContext(SharedValue) as any) || {}
         : {},
     );
-    if (/&:active/.test(args[0].join(","))) {
+    if (/&:(active|focus)/.test(args[0].join(","))) {
       return rnCSS((props: P) => {
         const {
           onPressIn,
