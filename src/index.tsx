@@ -350,7 +350,14 @@ function applyRnCSS<P extends { style?: S }, S>(
         ) {
           return <C {...rest} onBlur={onBlur} onFocus={onFocus} />;
         }
-        if (component() === RNPressable) {
+        if (
+          [
+            RNPressable,
+            RNTouchableHighlight,
+            RNTouchableOpacity,
+            RNTouchableWithoutFeedback,
+          ].includes(component() as any)
+        ) {
           component(RNView as any);
         }
         if ((component() as any) === RNTextInput) {
@@ -358,7 +365,7 @@ function applyRnCSS<P extends { style?: S }, S>(
           rest.onBlur = onBlur;
         }
         return (
-          <RNPressable
+          <RNTouchableWithoutFeedback
             onPressIn={onPressIn}
             onPressOut={onPressOut}
             onFocus={rest.onFocus ? undefined : onFocus}
@@ -367,7 +374,7 @@ function applyRnCSS<P extends { style?: S }, S>(
             <RNView>
               <C {...rest} />
             </RNView>
-          </RNPressable>
+          </RNTouchableWithoutFeedback>
         );
       })(...templated);
     }
