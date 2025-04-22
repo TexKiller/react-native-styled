@@ -333,6 +333,8 @@ function applyRnCSS<P extends { style?: S }, S>(
         const {
           onPressIn,
           onPressOut,
+          onFocus,
+          onBlur,
           // eslint-disable-next-line @typescript-eslint/no-unused-vars
           _onResponderStart,
           // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -345,7 +347,12 @@ function applyRnCSS<P extends { style?: S }, S>(
           component(RNView as any);
         }
         return (
-          <RNPressable onPressIn={onPressIn} onPressOut={onPressOut}>
+          <RNPressable
+            onPressIn={onPressIn}
+            onPressOut={onPressOut}
+            onFocus={onFocus}
+            onBlur={onBlur}
+          >
             <RNView>
               <C {...rest} />
             </RNView>
