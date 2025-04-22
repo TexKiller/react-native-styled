@@ -5,7 +5,7 @@ export const fixFontStyle = (style: any) => {
   let weight = 400;
   let family = "";
   let color = "inherit";
-  const styles = style instanceof Array ? style : [style];
+  const styles = [...(style instanceof Array ? style : [style])];
   for (const style of styles) {
     if (style?.fontWeight) {
       weight = style.fontWeight;

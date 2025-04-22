@@ -296,9 +296,9 @@ styled.TextInput = styled((props: TextInputProps) => {
       ? (props.style.length && props.style) || [{}]
       : [props.style || {}]),
   ]);
-  style[style.length - 1] = {
-    ...style[style.length - 1],
-    width: style[style.length - 1].width || "100%",
+  style[0] = {
+    ...style[0],
+    width: style[0].width || "100%",
   };
   return <RNTextInput {...props} style={fixFontStyle(props.style)} />;
 });
