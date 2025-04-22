@@ -22,7 +22,11 @@ export const fixFontStyle = (style: any) => {
   } else if ((weight as any) === "bold") {
     weight = 700;
   }
-  styles[styles.length - 1].fontWeight = weight;
+  styles[styles.length - 1] = {
+    ...styles[styles.length - 1],
+    fontWeight: weight,
+    color,
+  };
   if (family && !family.includes("-")) {
     styles[styles.length - 1].fontFamily =
       (weight < 500 && `${family}-Regular`) ||
@@ -30,6 +34,5 @@ export const fixFontStyle = (style: any) => {
       (weight < 700 && `${family}-SemiBold`) ||
       `${family}-Bold`;
   }
-  styles[styles.length - 1].color = color;
   return style;
 };
