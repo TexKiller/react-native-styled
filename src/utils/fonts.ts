@@ -1,9 +1,10 @@
 export const fixFontStyle = (style: any) => {
   if (!style) {
-    return;
+    return { color: "inherit" };
   }
   let weight = 400;
   let family = "";
+  let color = "inherit";
   const styles = style instanceof Array ? style : [style];
   for (const style of styles) {
     if (style?.fontWeight) {
@@ -11,6 +12,9 @@ export const fixFontStyle = (style: any) => {
     }
     if (style?.fontFamily) {
       family = style.fontFamily;
+    }
+    if (style?.color) {
+      color = style.color;
     }
   }
   if ((weight as any) === "normal") {
@@ -26,5 +30,6 @@ export const fixFontStyle = (style: any) => {
       (weight < 700 && `${family}-SemiBold`) ||
       `${family}-Bold`;
   }
+  styles[styles.length - 1].color = color;
   return style;
 };

@@ -295,9 +295,7 @@ styled.RefreshControl = styled(RNRefreshControl);
 styled.SafeAreaView = styled(RNSafeAreaView);
 styled.Text = styled((props: TextProps) => (
   <RNText {...props} style={fixFontStyle(props.style)} />
-))`
-  color: inherit;
-`;
+));
 styled.TextInput = styled((props: TextInputProps) => (
   <RNTextInput {...props} style={fixFontStyle(props.style)} />
 ));
