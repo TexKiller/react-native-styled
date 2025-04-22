@@ -259,20 +259,10 @@ const styled = <P extends { style?: S }, S>(
       );
     }
     if (styles[0].find(Boolean)) {
-      const StyledOriginalComponent = React.useMemo(
-        () =>
-          applyRnCSS(
-            C,
-            (O) => (OriginalComponent = O || OriginalComponent),
-          )(...styles),
-        [
-          C,
-          OriginalComponent,
-          styles
-            .flat()
-            .map((e: any) => (typeof e === "function" ? e.toString() : e)),
-        ],
-      );
+      const StyledOriginalComponent = applyRnCSS(
+        C,
+        (O) => (OriginalComponent = O || OriginalComponent),
+      )(...styles);
       return <StyledOriginalComponent {...args[0]} />;
     }
     return <C {...(args[0] || {})} />;
