@@ -39,12 +39,14 @@ type TemplatedParameters = Parameters<ReturnType<typeof rnCSS>>;
 function styled<P extends { style?: S }, S = P["style"]>(
   OriginalComponent: React.ComponentType<P>,
 ): (
-  ...temp: TemplatedParameters
-) => React.FunctionComponent<P & { css?: TemplatedParameters }>;
+  ...temp: Parameters<ReturnType<typeof rnCSS>>
+) => React.FunctionComponent<
+  P & { css?: Parameters<ReturnType<typeof rnCSS>> }
+>;
 function styled<P extends { style?: S }, S = P["style"]>(
   OriginalComponent: React.ComponentType<P>,
-  ...args: [...TemplatedParameters[]]
-): React.FunctionComponent<P & { css?: TemplatedParameters }>;
+  ...args: [...Parameters<ReturnType<typeof rnCSS>>[]]
+): React.FunctionComponent<P & { css?: Parameters<ReturnType<typeof rnCSS>> }>;
 function styled<
   P extends { style?: S },
   V extends Record<string, any>,
@@ -52,8 +54,10 @@ function styled<
 >(
   OriginalComponent: React.ComponentType<P>,
   cva: Partial<CVA<V>>,
-  ...args: [...TemplatedParameters[]]
-): React.FunctionComponent<P & V & { css?: TemplatedParameters }>;
+  ...args: [...Parameters<ReturnType<typeof rnCSS>>[]]
+): React.FunctionComponent<
+  P & V & { css?: Parameters<ReturnType<typeof rnCSS>> }
+>;
 function styled<
   P extends { style?: S },
   S = P["style"],
