@@ -41,15 +41,18 @@ function styled<P extends { style?: S }, S = P["style"]>(
 ): (
   ...temp: TemplatedParameters
 ) => React.FunctionComponent<P & { css?: TemplatedParameters }>;
+function styled<P extends { style?: S }, S = P["style"]>(
+  OriginalComponent: React.ComponentType<P>,
+  ...args: [...TemplatedParameters[]]
+): React.FunctionComponent<P & { css?: TemplatedParameters }>;
 function styled<
   P extends { style?: S },
+  V extends Record<string, any>,
   S = P["style"],
-  V extends Record<string, any> = P,
 >(
   OriginalComponent: React.ComponentType<P>,
-  ...args:
-    | [Partial<CVA<V>>, ...TemplatedParameters[]]
-    | [...TemplatedParameters[]]
+  cva: Partial<CVA<V>>,
+  ...args: [...TemplatedParameters[]]
 ): React.FunctionComponent<P & V & { css?: TemplatedParameters }>;
 function styled<
   P extends { style?: S },
