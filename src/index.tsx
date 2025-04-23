@@ -213,7 +213,7 @@ function styled<
     );
   };
   const cvaParam: Partial<CVA<V>> =
-    !args[0] || args[0] instanceof Array ? {} : (args.shift() as CVA<V>);
+    !args[0] || args[0] instanceof Array ? {} : (args.shift() as any);
   const cva: CVA<V> = {
     variants: cvaParam.variants || {},
     compoundVariants: cvaParam.compoundVariants || [],
@@ -225,9 +225,8 @@ function styled<
     ): React.FunctionComponent<P & V & { css?: TemplatedParameters }> =>
     (props) => {
       let styles: TemplatedParameters = css(
-        temp,
+        temp[0] ? temp : ([[""]] as any),
         ...(props.css ? [props.css] : []),
-        ...(args as TemplatedParameters[]),
       );
       if (cvaParam.variants || cvaParam.compoundVariants) {
         const variantProps: P & V = {
