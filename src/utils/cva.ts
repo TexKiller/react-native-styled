@@ -19,14 +19,19 @@ export const cva = <
   CV extends [...R],
   V extends {
     [k in keyof V]: {
-      [j in keyof V[k]]: V[k][j] extends string ? string : [...S];
+      [j in keyof V[k]]: V[k][j];
     };
   } = Record<never, never>,
-  S extends string[] = string[],
-  R extends { [k in keyof R[number]]: string | string[] }[] = Record<
+  R extends ({
+    [k in Exclude<keyof R[number], "css">]: k extends keyof R[number]
+      ? R[number][k] extends string
+        ? string
+        : string[]
+      : never;
+  } & { css: TemplatedParameters | TemplatedParameters[] })[] = (Record<
     never,
     never
-  >[],
+  > & { css: TemplatedParameters | TemplatedParameters[] })[],
   DV extends { [k in keyof DV]: string } = Record<never, never>,
 >(cva: {
   variants?: Narrow<V>;

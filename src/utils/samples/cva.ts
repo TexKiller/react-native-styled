@@ -4,14 +4,14 @@ export type PropsSample = {
 export type ValidCVASample = {
   variants: {
     color: {
-      red: [];
-      blue: [];
+      red: any;
+      blue: any;
     };
   };
   compoundVariants: [
     {
       color: ["green", "yellow"];
-      css: [];
+      css: any;
     },
   ];
   defaultVariants: {
@@ -22,7 +22,7 @@ export type ValidCVASample = {
 export type InvalidCVASample = {
   variants: {
     color: {
-      black: [];
+      black: any;
     };
   };
   compoundVariants: [];
