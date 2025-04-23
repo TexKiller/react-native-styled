@@ -36,12 +36,31 @@ export * from "./utils/cva";
 
 type TemplatedParameters = Parameters<ReturnType<typeof rnCSS>>;
 
-const styled = <P extends { style?: S }, S, V extends Record<string, any> = P>(
+function styled<P extends { style?: S }, S = P["style"]>(
+  OriginalComponent: React.ComponentType<P>,
+): (
+  ...temp: TemplatedParameters
+) => React.FunctionComponent<P & { css?: TemplatedParameters }>;
+function styled<
+  P extends { style?: S },
+  S = P["style"],
+  V extends Record<string, any> = P,
+>(
   OriginalComponent: React.ComponentType<P>,
   ...args:
     | [Partial<CVA<V>>, ...TemplatedParameters[]]
     | [...TemplatedParameters[]]
-) => {
+): React.FunctionComponent<P & V & { css?: TemplatedParameters }>;
+function styled<
+  P extends { style?: S },
+  S = P["style"],
+  V extends Record<string, any> = P,
+>(
+  OriginalComponent: React.ComponentType<P>,
+  ...args:
+    | [Partial<CVA<V>>, ...TemplatedParameters[]]
+    | [...TemplatedParameters[]]
+) {
   const Component = ({
     OriginalComponent,
     ...props
@@ -189,8 +208,11 @@ const styled = <P extends { style?: S }, S, V extends Record<string, any> = P>(
     compoundVariants: cvaParam.compoundVariants || [],
     defaultVariants: cvaParam.defaultVariants || {},
   };
-  return (...temp: TemplatedParameters) =>
-    (props: P & V & { css?: TemplatedParameters }): React.ReactNode => {
+  const styledComponent =
+    (
+      ...temp: TemplatedParameters
+    ): React.FunctionComponent<P & V & { css?: TemplatedParameters }> =>
+    (props) => {
       let styles: TemplatedParameters = css(
         temp,
         ...(props.css ? [props.css] : []),
@@ -247,7 +269,15 @@ const styled = <P extends { style?: S }, S, V extends Record<string, any> = P>(
       }
       return <C {...props} />;
     };
-};
+  if (
+    cvaParam.variants ||
+    cvaParam.compoundVariants ||
+    cvaParam.defaultVariants
+  ) {
+    return styledComponent([[""]] as any);
+  }
+  return styledComponent;
+}
 
 styled.ActivityIndicator = styled(RNActivityIndicator);
 styled.Image = styled(RNImage);
