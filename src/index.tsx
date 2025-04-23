@@ -213,7 +213,7 @@ function styled<
     );
   };
   const cvaParam: Partial<CVA<V>> =
-    args[0] instanceof Array ? {} : (args.shift() as CVA<V>);
+    !args[0] || args[0] instanceof Array ? {} : (args.shift() as CVA<V>);
   const cva: CVA<V> = {
     variants: cvaParam.variants || {},
     compoundVariants: cvaParam.compoundVariants || [],
