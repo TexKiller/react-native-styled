@@ -13,7 +13,7 @@ export const expected = [
   [
     `
     webactive1: 
-      background-color: blue§
+      webbackground-color: blue§
     ;`,
   ],
   [],

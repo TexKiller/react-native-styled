@@ -1,6 +1,5 @@
 import React from "react";
 import {
-  Keyboard,
   Platform,
   ActivityIndicator as RNActivityIndicator,
   Image as RNImage,
@@ -22,44 +21,27 @@ import {
   TextInputProps,
   TextProps,
 } from "react-native";
-import rnCSS, { SharedValue } from "rn-css";
+import rnCSS from "rn-css";
 import ShadowedText from "./components/ShadowedText";
 import ShadowedView from "./components/ShadowedView";
 import VariablesWrapper from "./components/VariablesWrapper";
 import WebSelectors from "./components/WebSelectors";
+import { applyRnCSS, css } from "./utils/css";
+import { CVA } from "./utils/cva";
 import { fixFontStyle } from "./utils/fonts";
 import { camel2kebab } from "./utils/string";
-import { useTemplated } from "./utils/templated";
+
+export { css } from "./utils/css";
+export * from "./utils/cva";
 
 type TemplatedParameters = Parameters<ReturnType<typeof rnCSS>>;
 
-export type CVA<P extends Record<string, any>> = {
-  variants?: {
-    [k in keyof P]?: {
-      [j in P[k]]?: TemplatedParameters | TemplatedParameters[];
-    };
-  };
-  compoundVariants?: ({ [k in keyof P]?: P[k] | P[k][] } & {
-    css: TemplatedParameters | TemplatedParameters[];
-  })[];
-  defaultVariants?: Partial<P>;
-};
-
-type Props<P extends Record<string, any>> = {
-  css?: ReturnType<typeof css>;
-  cva?: Partial<CVA<P>>;
-};
-
-export type StyledComponent<P extends Record<string, any>> = {
-  (...args: TemplatedParameters[]): StyledComponent<P>;
-  (...args: TemplatedParameters): StyledComponent<P>;
-  (props: { [k in keyof (P & Props<P>)]: (P & Props<P>)[k] }): React.ReactNode;
-  cva: (arg: CVA<P>) => void;
-};
-
-const styled = <P extends { style?: S }, S>(
+const styled = <P extends { style?: S }, S, V extends Record<string, any> = P>(
   OriginalComponent: React.ComponentType<P>,
-): StyledComponent<P> => {
+  ...args:
+    | [Partial<CVA<V>>, ...TemplatedParameters[]]
+    | [...TemplatedParameters[]]
+) => {
   const Component = ({
     OriginalComponent,
     ...props
@@ -200,82 +182,67 @@ const styled = <P extends { style?: S }, S>(
       </ShadowedView>
     );
   };
-  let cva: CVA<P> = {};
-  const styledComponent = (...args: any[]): any => {
-    if (args[0] instanceof Array) {
-      const newStyledComponent = styled(
-        applyRnCSS(
-          C,
-          (O) => (OriginalComponent = O || OriginalComponent),
-        )(...css(...args)),
-      );
-      newStyledComponent.cva(cva);
-      return newStyledComponent;
-    }
-    const newCva: Required<CVA<P>> = {
-      variants: Object.assign(cva.variants || {}, args[0]?.cva?.variants || {}),
-      compoundVariants: [
-        ...(cva.compoundVariants || []),
-        ...(args[0]?.cva?.compoundVariants || []),
-      ],
-      defaultVariants: Object.assign(
-        cva.defaultVariants || {},
-        args[0]?.cva?.defaultVariants || {},
-      ),
-    };
-    const props: P = {
-      ...newCva.defaultVariants,
-      ...(args[0] || {}),
-    };
-    delete (props as any).css;
-    delete (props as any).cva;
-    let styles: TemplatedParameters = css(...(args[0]?.css || [[""], []]));
-    for (const prop in newCva.variants) {
-      const variant: TemplatedParameters | TemplatedParameters[] | undefined =
-        newCva.variants[prop]![props[prop]];
-      if (variant) {
+  const cvaParam: Partial<CVA<V>> =
+    args[0] instanceof Array ? {} : (args.shift() as CVA<V>);
+  const cva: CVA<V> = {
+    variants: cvaParam.variants || {},
+    compoundVariants: cvaParam.compoundVariants || [],
+    defaultVariants: cvaParam.defaultVariants || {},
+  };
+  return (props: P & V & { css?: TemplatedParameters }): React.ReactNode => {
+    let styles: TemplatedParameters = css(
+      ...(props.css ? [props.css] : []),
+      ...(args as TemplatedParameters[]),
+    );
+    if (cvaParam.variants || cvaParam.compoundVariants) {
+      const variantProps: P & V = {
+        ...cva.defaultVariants,
+        ...props,
+      };
+      delete (variantProps as any).css;
+      for (const prop in cva.variants) {
+        const variant: TemplatedParameters | TemplatedParameters[] | undefined =
+          cva.variants[prop]![variantProps[prop]];
+        if (variant) {
+          styles = css(
+            styles,
+            ...(variant[0][0] instanceof Array
+              ? (variant as TemplatedParameters[])
+              : [variant as TemplatedParameters]),
+          );
+        }
+      }
+      for (const compoundVariant of cva.compoundVariants) {
+        if (
+          (Object.keys(compoundVariant) as (keyof V)[]).find(
+            (prop) =>
+              prop !== "css" &&
+              ![
+                ...(compoundVariant[prop] instanceof Array
+                  ? compoundVariant[prop]
+                  : [compoundVariant[prop]]),
+              ].includes(variantProps[prop]),
+          )
+        ) {
+          continue;
+        }
         styles = css(
           styles,
-          ...(variant[0][0] instanceof Array
-            ? (variant as TemplatedParameters[])
-            : [variant as TemplatedParameters]),
+          ...(compoundVariant.css[0][0] instanceof Array
+            ? (compoundVariant.css as TemplatedParameters[])
+            : [compoundVariant.css as TemplatedParameters]),
         );
       }
     }
-    for (const compoundVariant of newCva.compoundVariants) {
-      if (
-        (Object.keys(compoundVariant) as (keyof P)[]).find(
-          (prop) =>
-            prop !== "css" &&
-            ![
-              ...(compoundVariant[prop] instanceof Array
-                ? compoundVariant[prop]
-                : [compoundVariant[prop]]),
-            ].includes(props[prop]),
-        )
-      ) {
-        continue;
-      }
-      styles = css(
-        styles,
-        ...(compoundVariant.css[0][0] instanceof Array
-          ? (compoundVariant.css as TemplatedParameters[])
-          : [compoundVariant.css as TemplatedParameters]),
-      );
-    }
-    if (styles[0].find(Boolean)) {
+    if (styles[0].length > 1 || styles[0][0]) {
       const StyledOriginalComponent = applyRnCSS(
         C,
         (O) => (OriginalComponent = O || OriginalComponent),
       )(...styles);
-      return <StyledOriginalComponent {...args[0]} />;
+      return <StyledOriginalComponent {...props} />;
     }
-    return <C {...(args[0] || {})} />;
+    return <C {...props} />;
   };
-  styledComponent.cva = (arg: CVA<P>) => {
-    cva = arg;
-  };
-  return styledComponent;
 };
 
 styled.ActivityIndicator = styled(RNActivityIndicator);
@@ -311,123 +278,4 @@ styled.TouchableOpacity = styled(RNTouchableOpacity);
 styled.TouchableWithoutFeedback = styled(RNTouchableWithoutFeedback);
 styled.View = styled(RNView);
 
-export const css = (...args: TemplatedParameters | TemplatedParameters[]) => {
-  if (args[0]?.[0] instanceof Array) {
-    const first = args.shift() as TemplatedParameters;
-    return [
-      (args as TemplatedParameters[]).reduce(
-        (acc, curr) => {
-          acc[acc.length - 1] += curr[0][0];
-          acc.push(...curr[0].slice(1));
-          return acc;
-        },
-        [...first[0]],
-      ) as any,
-      ...first.slice(1),
-      ...(args as TemplatedParameters[]).map((c) => c.slice(1)).flat(),
-    ] as TemplatedParameters;
-  }
-  return args as TemplatedParameters;
-};
-
 export default styled;
-
-function applyRnCSS<P extends { style?: S }, S>(
-  C: React.FunctionComponent<P>,
-  component: (C?: React.ComponentType<P>) => React.ComponentType<P>,
-) {
-  return (...args: TemplatedParameters) => {
-    const templated = useTemplated(
-      args,
-      Platform.OS,
-      Platform.OS !== "web" && /var\(--[^),]+/g.exec(args[0].join(","))
-        ? (React.useContext(SharedValue) as any) || {}
-        : {},
-    );
-    if (/&:(active|focus)/.test(args[0].join(","))) {
-      return rnCSS((props: P) => {
-        const {
-          onPress,
-          onPressIn,
-          onPressOut,
-          onFocus,
-          onBlur,
-          // eslint-disable-next-line @typescript-eslint/no-unused-vars
-          _onResponderStart,
-          // eslint-disable-next-line @typescript-eslint/no-unused-vars
-          _onResponderRelease,
-          // eslint-disable-next-line @typescript-eslint/no-unused-vars
-          _onStartShouldSetResponder,
-          ...rest
-        } = props as any;
-        if (
-          Platform.OS === "web" ||
-          (!onPress &&
-            !onPressIn &&
-            !onPressOut &&
-            ((!onFocus && !onBlur) || (component() as any) === RNTextInput))
-        ) {
-          return (
-            <C
-              {...rest}
-              onPress={onPress}
-              onPressIn={onPressIn}
-              onPressOut={onPressOut}
-              onFocus={onFocus}
-              onBlur={onBlur}
-            />
-          );
-        }
-        if (
-          [
-            RNPressable,
-            RNTouchableHighlight,
-            RNTouchableOpacity,
-            RNTouchableWithoutFeedback,
-          ].includes(component() as any)
-        ) {
-          component(RNView as any);
-        }
-        let newOnPressIn = onPressIn;
-        let ref: React.RefObject<RNTextInput | null> | undefined;
-        if ((component() as any) === RNTextInput) {
-          rest.onFocus = onFocus;
-          rest.onBlur = onBlur;
-        } else if (onFocus || onBlur) {
-          ref = React.useRef<RNTextInput>(null);
-          newOnPressIn = function (this: any, ...args: any[]) {
-            Keyboard.dismiss();
-            ref!.current?.focus();
-            return onPressIn?.apply(this, args);
-          };
-        }
-        return (
-          <RNPressable
-            onPress={onPress}
-            onPressIn={newOnPressIn}
-            onPressOut={onPressOut}
-          >
-            {ref && (
-              <RNTextInput
-                ref={ref}
-                style={{
-                  width: 1,
-                  height: 1,
-                  position: "absolute",
-                  top: -999999,
-                }}
-                onFocus={onFocus}
-                onBlur={onBlur}
-                showSoftInputOnFocus={false}
-              />
-            )}
-            <RNView>
-              <C {...rest} />
-            </RNView>
-          </RNPressable>
-        );
-      })(...templated);
-    }
-    return rnCSS(C)(...templated);
-  };
-}
