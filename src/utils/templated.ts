@@ -46,7 +46,7 @@ export const useTemplated = (
       chunks[i] = chunks[i].replace(
         /@media\s*([^{]*){([^}]*)}/g,
         (_, c, d) =>
-          `webmedia${++mediaCount}: ${c.replace(/;/g, "§")} { §§§ { ${d.replace(/;/g, "§")}; } }`,
+          `webmedia${++mediaCount}: ${c.replace(/;/g, "§")} { §§§ { ${d.replace(/;/g, "§")} } };`,
       );
       chunks[i] = chunks[i].replace(/calc\(/g, "webcalc(");
       chunks[i] = chunks[i].replace(
