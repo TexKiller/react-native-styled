@@ -283,9 +283,10 @@ function styled<
   if (
     cvaParam.variants ||
     cvaParam.compoundVariants ||
-    cvaParam.defaultVariants
+    cvaParam.defaultVariants ||
+    args[0]
   ) {
-    return styledComponent([[""]] as any);
+    return styledComponent(...css(...(args as TemplatedParameters[])));
   }
   return styledComponent;
 }
