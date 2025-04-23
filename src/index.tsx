@@ -189,60 +189,64 @@ const styled = <P extends { style?: S }, S, V extends Record<string, any> = P>(
     compoundVariants: cvaParam.compoundVariants || [],
     defaultVariants: cvaParam.defaultVariants || {},
   };
-  return (props: P & V & { css?: TemplatedParameters }): React.ReactNode => {
-    let styles: TemplatedParameters = css(
-      ...(props.css ? [props.css] : []),
-      ...(args as TemplatedParameters[]),
-    );
-    if (cvaParam.variants || cvaParam.compoundVariants) {
-      const variantProps: P & V = {
-        ...cva.defaultVariants,
-        ...props,
-      };
-      delete (variantProps as any).css;
-      for (const prop in cva.variants) {
-        const variant: TemplatedParameters | TemplatedParameters[] | undefined =
-          cva.variants[prop]![variantProps[prop]];
-        if (variant) {
+  return (...temp: TemplatedParameters) =>
+    (props: P & V & { css?: TemplatedParameters }): React.ReactNode => {
+      let styles: TemplatedParameters = css(
+        temp,
+        ...(props.css ? [props.css] : []),
+        ...(args as TemplatedParameters[]),
+      );
+      if (cvaParam.variants || cvaParam.compoundVariants) {
+        const variantProps: P & V = {
+          ...cva.defaultVariants,
+          ...props,
+        };
+        delete (variantProps as any).css;
+        for (const prop in cva.variants) {
+          const variant:
+            | TemplatedParameters
+            | TemplatedParameters[]
+            | undefined = cva.variants[prop]![variantProps[prop]];
+          if (variant) {
+            styles = css(
+              styles,
+              ...(variant[0][0] instanceof Array
+                ? (variant as TemplatedParameters[])
+                : [variant as TemplatedParameters]),
+            );
+          }
+        }
+        for (const compoundVariant of cva.compoundVariants) {
+          if (
+            (Object.keys(compoundVariant) as (keyof V)[]).find(
+              (prop) =>
+                prop !== "css" &&
+                ![
+                  ...(compoundVariant[prop] instanceof Array
+                    ? compoundVariant[prop]
+                    : [compoundVariant[prop]]),
+                ].includes(variantProps[prop]),
+            )
+          ) {
+            continue;
+          }
           styles = css(
             styles,
-            ...(variant[0][0] instanceof Array
-              ? (variant as TemplatedParameters[])
-              : [variant as TemplatedParameters]),
+            ...(compoundVariant.css[0][0] instanceof Array
+              ? (compoundVariant.css as TemplatedParameters[])
+              : [compoundVariant.css as TemplatedParameters]),
           );
         }
       }
-      for (const compoundVariant of cva.compoundVariants) {
-        if (
-          (Object.keys(compoundVariant) as (keyof V)[]).find(
-            (prop) =>
-              prop !== "css" &&
-              ![
-                ...(compoundVariant[prop] instanceof Array
-                  ? compoundVariant[prop]
-                  : [compoundVariant[prop]]),
-              ].includes(variantProps[prop]),
-          )
-        ) {
-          continue;
-        }
-        styles = css(
-          styles,
-          ...(compoundVariant.css[0][0] instanceof Array
-            ? (compoundVariant.css as TemplatedParameters[])
-            : [compoundVariant.css as TemplatedParameters]),
-        );
+      if (styles[0].length > 1 || styles[0][0]) {
+        const StyledOriginalComponent = applyRnCSS(
+          C,
+          (O) => (OriginalComponent = O || OriginalComponent),
+        )(...styles);
+        return <StyledOriginalComponent {...props} />;
       }
-    }
-    if (styles[0].length > 1 || styles[0][0]) {
-      const StyledOriginalComponent = applyRnCSS(
-        C,
-        (O) => (OriginalComponent = O || OriginalComponent),
-      )(...styles);
-      return <StyledOriginalComponent {...props} />;
-    }
-    return <C {...props} />;
-  };
+      return <C {...props} />;
+    };
 };
 
 styled.ActivityIndicator = styled(RNActivityIndicator);
