@@ -16,6 +16,7 @@ export const useTemplated = (
   let hoverCount = 0;
   let activeCount = 0;
   let focusCount = 0;
+  let mediaCount = 0;
   for (let i = 0; i < chunks.length; i++) {
     if (typeof chunks[i] !== "string") {
       continue;
@@ -28,7 +29,7 @@ export const useTemplated = (
         /(?<=:[^;]*)(\b\d+(\.\d+)?)([a-z]+\b|%)/gi,
         (_, a, _b, c) => `${a}§${c}`,
       );
-      // and rename var, hover, active, focus, calc, outline, background and border
+      // and rename var, hover, active, focus, media, calc, outline, background and border
       chunks[i] = chunks[i].replace(/var\(-/g, "webvar(");
       chunks[i] = chunks[i].replace(
         /&:hover\s*{([^}]*)}/g,
@@ -41,6 +42,11 @@ export const useTemplated = (
       chunks[i] = chunks[i].replace(
         /&:focus\s*{([^}]*)}/g,
         (_, c) => `webfocus${++focusCount}: ${c.replace(/;/g, "§")};`,
+      );
+      chunks[i] = chunks[i].replace(
+        /@media\s*([^{]*){([^}]*)}/g,
+        (_, c, d) =>
+          `webmedia${++mediaCount}: ${c.replace(/;/g, "§")} { §§§ { ${d.replace(/;/g, "§")}; } }`,
       );
       chunks[i] = chunks[i].replace(/calc\(/g, "webcalc(");
       chunks[i] = chunks[i].replace(

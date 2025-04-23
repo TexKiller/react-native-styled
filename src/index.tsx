@@ -98,6 +98,7 @@ function styled<
     let hover = "";
     let active = "";
     let focus = "";
+    let media = "";
     for (const style of props.style instanceof Array
       ? props.style
       : [props.style]) {
@@ -118,6 +119,7 @@ function styled<
           !key.startsWith("webhover") &&
           !key.startsWith("webactive") &&
           !key.startsWith("webfocus") &&
+          !key.startsWith("webmedia") &&
           !key.startsWith("weboutline") &&
           !key.startsWith("webbackground") &&
           !key.startsWith("webborder") &&
@@ -133,6 +135,8 @@ function styled<
           active += style[key] + "§";
         } else if (key.startsWith("webfocus")) {
           focus += style[key] + "§";
+        } else if (key.startsWith("webmedia")) {
+          media += "@media " + style[key] + "§";
         } else if (key.startsWith("weboutline")) {
           style[key.replace(/^weboutline/, "outline")] = style[key];
         } else if (key.startsWith("webbackground")) {
@@ -158,6 +162,14 @@ function styled<
           focus={focus
             .substring(0, focus.length - 1)
             .replace(/§/g, " !important;")
+            .replace(/---/g, "--")}
+          media={media
+            .substring(0, media.length - 1)
+            .replace(/§/g, " !important;")
+            .replace(
+              /(?!< !important;) !important; !important; !important;/g,
+              "§",
+            )
             .replace(/---/g, "--")}
           {...props}
           OriginalComponent={OriginalComponent}
