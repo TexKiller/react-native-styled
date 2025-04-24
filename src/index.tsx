@@ -230,29 +230,35 @@ styled.ScrollView = styled(RNScrollView);
 styled.Switch = styled(RNSwitch);
 styled.RefreshControl = styled(RNRefreshControl);
 styled.SafeAreaView = styled(RNSafeAreaView);
-styled.Text = styled((props: TextProps) => (
-  <RNText {...props} style={fixFontStyle(props.style)} />
-));
-styled.TextInput = styled((props: TextInputProps) => {
-  const style: any[] = [
-    ...(props.style instanceof Array
-      ? (props.style.length && props.style) || [{}]
-      : [props.style || {}]),
-  ];
-  style[0] = {
-    ...style[0],
-    width: style[0].width || "100%",
-    boxSizing: style[0].boxSizing || "border-box",
-    flex: style[0].flex || 1,
-  };
-  return <RNTextInput {...props} style={fixFontStyle(style)} />;
-});
+styled.Text = styled(
+  React.forwardRef<RNText, TextProps>((props, ref) => (
+    <RNText {...props} style={fixFontStyle(props.style)} ref={ref} />
+  )),
+);
+styled.TextInput = styled(
+  React.forwardRef<RNTextInput, TextInputProps>((props, ref) => {
+    const style: any[] = [
+      ...(props.style instanceof Array
+        ? (props.style.length && props.style) || [{}]
+        : [props.style || {}]),
+    ];
+    style[0] = {
+      ...style[0],
+      width: style[0].width || "100%",
+      boxSizing: style[0].boxSizing || "border-box",
+      flex: style[0].flex || 1,
+    };
+    return <RNTextInput {...props} style={fixFontStyle(style)} ref={ref} />;
+  }),
+);
 styled.TouchableHighlight = styled(RNTouchableHighlight);
 styled.TouchableNativeFeedback = styled(RNTouchableNativeFeedback);
 styled.TouchableOpacity = styled(RNTouchableOpacity);
 styled.TouchableWithoutFeedback = styled(RNTouchableWithoutFeedback);
-styled.View = styled((props: ViewProps) => (
-  <RNView {...props} style={fixViewStyle(props.style)} />
-));
+styled.View = styled(
+  React.forwardRef<RNView, ViewProps>((props, ref) => (
+    <RNView {...props} style={fixViewStyle(props.style)} ref={ref} />
+  )),
+);
 
 export default styled;
