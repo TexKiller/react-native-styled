@@ -113,7 +113,9 @@ function styled<
             )
             .replace(/weboutline/g, "outline")
             .replace(/webbackground/g, "background")
-            .replace(/webborder/g, "border");
+            .replace(/webborder/g, "border")
+            .replace(/webmargin/g, "margin")
+            .replace(/webpadding/g, "padding");
         }
         if (
           !key.startsWith("webhover") &&
@@ -123,6 +125,8 @@ function styled<
           !key.startsWith("weboutline") &&
           !key.startsWith("webbackground") &&
           !key.startsWith("webborder") &&
+          !key.startsWith("webmargin") &&
+          !key.startsWith("webpadding") &&
           !key.startsWith("-")
         ) {
           continue;
