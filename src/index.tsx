@@ -143,6 +143,10 @@ function styled<
           style[key.replace(/^webbackground/, "background")] = style[key];
         } else if (key.startsWith("webborder")) {
           style[key.replace(/^webborder/, "border")] = style[key];
+        } else if (key.startsWith("webmargin")) {
+          style[key.replace(/^webmargin/, "margin")] = style[key];
+        } else if (key.startsWith("webpadding")) {
+          style[key.replace(/^webpadding/, "padding")] = style[key];
         }
         delete style[key];
       }

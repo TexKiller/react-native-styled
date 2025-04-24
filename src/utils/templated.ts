@@ -29,7 +29,7 @@ export const useTemplated = (
         /(?<=:[^;]*)(\b\d+(\.\d+)?)([a-z]+\b|%)/gi,
         (_, a, _b, c) => `${a}§${c}`,
       );
-      // and rename var, hover, active, focus, media, calc, outline, background and border
+      // and rename var, hover, active, focus, media, calc, outline, background, border, margin and padding
       chunks[i] = chunks[i].replace(/var\(-/g, "webvar(");
       chunks[i] = chunks[i].replace(
         /&:hover\s*{([^}]*)}/g,
@@ -44,7 +44,7 @@ export const useTemplated = (
         (_, c) => `webfocus${++focusCount}: ${c.replace(/;/g, "§")};`,
       );
       chunks[i] = chunks[i].replace(
-        /@media\s*([^{]*){([^}]*)}/g,
+        /@media\s*([^{]*){([^{}]*)}/g,
         (_, c, d) =>
           `webmedia${++mediaCount}: ${c.replace(/;/g, "§")} { §§§ { ${d.replace(/;/g, "§")} } };`,
       );
@@ -58,6 +58,11 @@ export const useTemplated = (
         (_, c) => `webbackground${c}`,
       );
       chunks[i] = chunks[i].replace(/border(-|:)/g, (_, c) => `webborder${c}`);
+      chunks[i] = chunks[i].replace(/margin(-|:)/g, (_, c) => `webmargin${c}`);
+      chunks[i] = chunks[i].replace(
+        /padding(-|:)/g,
+        (_, c) => `webpadding${c}`,
+      );
       continue;
     }
     chunks[i] = chunks[i].replace(
