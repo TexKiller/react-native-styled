@@ -11,7 +11,7 @@ export default (C: Parameters<typeof styled>[0]) =>
           className: (props as any).className,
         });
       }
-      return <C {...props} ref={ref} />;
+      return <C {...props} ref={innerRef} />;
     }),
   );
 
