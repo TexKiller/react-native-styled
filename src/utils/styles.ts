@@ -1,6 +1,12 @@
 export const fixFontStyle = (style: any) => {
   if (!style) {
-    return { fontWeight: 400, color: "inherit" };
+    return {
+      fontWeight: 400,
+      color: "inherit",
+      textDecoration: "inherit",
+      whiteSpace: "inherit",
+      overflowWrap: "inherit",
+    };
   }
   let weight = 400;
   let family = "";

@@ -5,6 +5,9 @@ describe("fixFontStyle", () => {
     expect(fixFontStyle({ fontWeight: "normal" })).toEqual({
       fontWeight: 400,
       color: "inherit",
+      textDecoration: "inherit",
+      whiteSpace: "inherit",
+      overflowWrap: "inherit",
     });
   });
   it("should return the correct font family", () => {
@@ -12,6 +15,9 @@ describe("fixFontStyle", () => {
       fontWeight: 700,
       fontFamily: "Arial-Bold",
       color: "inherit",
+      textDecoration: "inherit",
+      whiteSpace: "inherit",
+      overflowWrap: "inherit",
     });
   });
   it("should not change font family if font family has dashes", () => {
@@ -20,6 +26,9 @@ describe("fixFontStyle", () => {
         fontWeight: 400,
         fontFamily: "Arial-Bold",
         color: "inherit",
+        textDecoration: "inherit",
+        whiteSpace: "inherit",
+        overflowWrap: "inherit",
       },
     );
   });
