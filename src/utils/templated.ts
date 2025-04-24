@@ -1,6 +1,5 @@
 export const useTemplated = (
-  args: Parameters<ReturnType<typeof import("rn-css").default>>,
-  platform: "ios" | "android" | "windows" | "macos" | "web",
+  args: Parameters<ReturnType<typeof import("./styled").default>>,
   variables: Record<string, typeof args>,
 ) => {
   const chunks = [...args[0]] as string[];
@@ -13,56 +12,8 @@ export const useTemplated = (
       i--;
     }
   }
-  let hoverCount = 0;
-  let activeCount = 0;
-  let focusCount = 0;
-  let mediaCount = 0;
   for (let i = 0; i < chunks.length; i++) {
     if (typeof chunks[i] !== "string") {
-      continue;
-    }
-    if (platform === "web") {
-      // on web only add a dash to variables
-      chunks[i] = chunks[i].replace(/--/g, "---");
-      // and separate numbers from units
-      chunks[i] = chunks[i].replace(
-        /(?<=:[^;]*)(\b\d+(\.\d+)?)([a-z]+\b|%)/gi,
-        (_, a, _b, c) => `${a}§${c}`,
-      );
-      // and rename var, hover, active, focus, media, calc, outline, background, border, margin and padding
-      chunks[i] = chunks[i].replace(/var\(-/g, "webvar(");
-      chunks[i] = chunks[i].replace(
-        /&:hover\s*{([^}]*)}/g,
-        (_, c) => `webhover${++hoverCount}: ${c.replace(/;/g, "§")};`,
-      );
-      chunks[i] = chunks[i].replace(
-        /&:active\s*{([^}]*)}/g,
-        (_, c) => `webactive${++activeCount}: ${c.replace(/;/g, "§")};`,
-      );
-      chunks[i] = chunks[i].replace(
-        /&:focus\s*{([^}]*)}/g,
-        (_, c) => `webfocus${++focusCount}: ${c.replace(/;/g, "§")};`,
-      );
-      chunks[i] = chunks[i].replace(
-        /@media\s*([^{]*){([^{}]*)}/g,
-        (_, c, d) =>
-          `webmedia${++mediaCount}: ${c.replace(/;/g, "§")} { §§§ { ${d.replace(/;/g, "§")} } };`,
-      );
-      chunks[i] = chunks[i].replace(/calc\(/g, "webcalc(");
-      chunks[i] = chunks[i].replace(
-        /outline(-|:)/g,
-        (_, c) => `weboutline${c}`,
-      );
-      chunks[i] = chunks[i].replace(
-        /background(-|:)/g,
-        (_, c) => `webbackground${c}`,
-      );
-      chunks[i] = chunks[i].replace(/border(-|:)/g, (_, c) => `webborder${c}`);
-      chunks[i] = chunks[i].replace(/margin(-|:)/g, (_, c) => `webmargin${c}`);
-      chunks[i] = chunks[i].replace(
-        /padding(-|:)/g,
-        (_, c) => `webpadding${c}`,
-      );
       continue;
     }
     chunks[i] = chunks[i].replace(
@@ -118,5 +69,5 @@ export const useTemplated = (
     )[0];
     i--;
   }
-  return [chunks, functs] as any as [(typeof args)[0], (typeof args)[1]];
+  return [chunks, ...functs] as any as typeof args;
 };

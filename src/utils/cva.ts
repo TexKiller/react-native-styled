@@ -1,7 +1,7 @@
-import rnCSS from "rn-css";
+import styled from "./styled";
 import { Flat, Narrow } from "./types";
 
-type TemplatedParameters = Parameters<ReturnType<typeof rnCSS>>;
+type TemplatedParameters = Parameters<ReturnType<typeof styled>>;
 
 export type CVA<V extends Record<string, any>> = {
   variants: {

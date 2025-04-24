@@ -22,20 +22,18 @@ import {
   TextProps,
   ViewProps,
 } from "react-native";
-import rnCSS from "rn-css";
+import originalStyled from "./utils/styled";
 import ShadowedText from "./components/ShadowedText";
 import ShadowedView from "./components/ShadowedView";
 import VariablesWrapper from "./components/VariablesWrapper";
-import WebSelectors from "./components/WebSelectors";
-import { applyRnCSS, css } from "./utils/css";
+import { applyStyled, css } from "./utils/css";
 import { CVA } from "./utils/cva";
-import { camel2kebab } from "./utils/string";
 import { fixFontStyle, fixViewStyle } from "./utils/styles";
 
 export { css } from "./utils/css";
 export * from "./utils/cva";
 
-type TemplatedParameters = Parameters<ReturnType<typeof rnCSS>>;
+type TemplatedParameters = Parameters<ReturnType<typeof originalStyled>>;
 
 function styled<P extends { style?: S }, S = P["style"]>(
   OriginalComponent: React.ComponentType<P>,
@@ -82,157 +80,67 @@ function styled<
         ? props.style.reduce((s, c) => ({ ...c, ...s }), {})
         : (props.style ?? {}),
     );
-    if (Platform.OS !== "web") {
-      const newVars = styleEntries.filter(([k]) => k.startsWith("-"));
-      if (newVars.length) {
-        return (
-          <VariablesWrapper
-            {...props}
-            newVars={newVars}
-            OriginalComponent={OriginalComponent}
-          />
-        );
-      }
-      return <OriginalComponent {...(props as any)} />;
-    }
-    let variables = "";
-    let hover = "";
-    let active = "";
-    let focus = "";
-    let media = "";
-    for (const style of props.style instanceof Array
-      ? props.style
-      : [props.style]) {
-      for (const key in style) {
-        if (typeof style[key] === "string") {
-          style[key] = style[key]
-            .replace(/webcalc/g, "calc")
-            .replace(/webvar/g, "var")
-            .replace(
-              /(\b\d+(\.\d+)?)§([a-z]+\b|%)/gi,
-              (_, a, _b, c) => `${a}${c}`,
-            )
-            .replace(/weboutline/g, "outline")
-            .replace(/webbackground/g, "background")
-            .replace(/webborder/g, "border")
-            .replace(/webmargin/g, "margin")
-            .replace(/webpadding/g, "padding");
-        }
-        if (
-          !key.startsWith("webhover") &&
-          !key.startsWith("webactive") &&
-          !key.startsWith("webfocus") &&
-          !key.startsWith("webmedia") &&
-          !key.startsWith("weboutline") &&
-          !key.startsWith("webbackground") &&
-          !key.startsWith("webborder") &&
-          !key.startsWith("webmargin") &&
-          !key.startsWith("webpadding") &&
-          !key.startsWith("-")
-        ) {
-          continue;
-        }
-        if (key.startsWith("-")) {
-          variables += camel2kebab(key) + ": " + style[key] + ";\n";
-        } else if (key.startsWith("webhover")) {
-          hover += style[key] + "§";
-        } else if (key.startsWith("webactive")) {
-          active += style[key] + "§";
-        } else if (key.startsWith("webfocus")) {
-          focus += style[key] + "§";
-        } else if (key.startsWith("webmedia")) {
-          media += "@media " + style[key] + "§";
-        } else if (key.startsWith("weboutline")) {
-          style[key.replace(/^weboutline/, "outline")] = style[key];
-        } else if (key.startsWith("webbackground")) {
-          style[key.replace(/^webbackground/, "background")] = style[key];
-        } else if (key.startsWith("webborder")) {
-          style[key.replace(/^webborder/, "border")] = style[key];
-        } else if (key.startsWith("webmargin")) {
-          style[key.replace(/^webmargin/, "margin")] = style[key];
-        } else if (key.startsWith("webpadding")) {
-          style[key.replace(/^webpadding/, "padding")] = style[key];
-        }
-        delete style[key];
-      }
-    }
-    if (variables || hover || active) {
+    const newVars = styleEntries.filter(([k]) => k.startsWith("-"));
+    if (newVars.length) {
       return (
-        <WebSelectors
-          variables={variables}
-          hover={hover
-            .substring(0, hover.length - 1)
-            .replace(/§/g, " !important;")
-            .replace(/---/g, "--")}
-          active={active
-            .substring(0, active.length - 1)
-            .replace(/§/g, " !important;")
-            .replace(/---/g, "--")}
-          focus={focus
-            .substring(0, focus.length - 1)
-            .replace(/§/g, " !important;")
-            .replace(/---/g, "--")}
-          media={media
-            .substring(0, media.length - 1)
-            .replace(/§/g, " !important;")
-            .replace(
-              /(?!< !important;) !important; !important; !important;/g,
-              "§",
-            )
-            .replace(/---/g, "--")}
+        <VariablesWrapper
           {...props}
+          newVars={newVars}
           OriginalComponent={OriginalComponent}
         />
       );
     }
     return <OriginalComponent {...(props as any)} />;
   };
-  const C: React.FunctionComponent<P> = (props: P) => {
-    const styleEntries = Object.entries(
-      props.style instanceof Array
-        ? props.style.reduce((s, c) => ({ ...c, ...s }), {})
-        : (props.style ?? {}),
-    );
-    const shadowedTextEntries = styleEntries.filter(
-      ([k]) => k === "styledTextShadow",
-    );
-    if (shadowedTextEntries.length) {
-      OriginalComponent = ShadowedText as any;
-    }
-    const shadowedViewEntries = styleEntries.filter(
-      ([k]) => k.startsWith("shadow") || k === "styledBoxShadow",
-    );
-    if (!shadowedViewEntries.length) {
-      return (
-        <Component
-          {...props}
-          style={Object.fromEntries(styleEntries)}
-          OriginalComponent={OriginalComponent}
-        />
-      );
-    }
-    if ((OriginalComponent as any) === RNView) {
-      return (
-        <Component
-          {...props}
-          style={Object.fromEntries(styleEntries)}
-          OriginalComponent={ShadowedView as any}
-        />
-      );
-    }
-    const nonShadowEntries = styleEntries.filter(
-      ([k]) => !k.startsWith("shadow") && k !== "styledBoxShadow",
-    );
-    return (
-      <ShadowedView style={Object.fromEntries(shadowedViewEntries)}>
-        <Component
-          {...props}
-          style={Object.fromEntries(nonShadowEntries)}
-          OriginalComponent={OriginalComponent}
-        />
-      </ShadowedView>
-    );
-  };
+  const C: React.ComponentType<P> =
+    Platform.OS === "web"
+      ? OriginalComponent
+      : (props: P) => {
+          const styleEntries = Object.entries(
+            props.style instanceof Array
+              ? props.style.reduce((s, c) => ({ ...c, ...s }), {})
+              : (props.style ?? {}),
+          );
+          const shadowedTextEntries = styleEntries.filter(
+            ([k]) => k === "styledTextShadow",
+          );
+          if (shadowedTextEntries.length) {
+            OriginalComponent = ShadowedText as any;
+          }
+          const shadowedViewEntries = styleEntries.filter(
+            ([k]) => k.startsWith("shadow") || k === "styledBoxShadow",
+          );
+          if (!shadowedViewEntries.length) {
+            return (
+              <Component
+                {...props}
+                style={Object.fromEntries(styleEntries)}
+                OriginalComponent={OriginalComponent}
+              />
+            );
+          }
+          if ((OriginalComponent as any) === RNView) {
+            return (
+              <Component
+                {...props}
+                style={Object.fromEntries(styleEntries)}
+                OriginalComponent={ShadowedView as any}
+              />
+            );
+          }
+          const nonShadowEntries = styleEntries.filter(
+            ([k]) => !k.startsWith("shadow") && k !== "styledBoxShadow",
+          );
+          return (
+            <ShadowedView style={Object.fromEntries(shadowedViewEntries)}>
+              <Component
+                {...props}
+                style={Object.fromEntries(nonShadowEntries)}
+                OriginalComponent={OriginalComponent}
+              />
+            </ShadowedView>
+          );
+        };
   const cvaParam: Partial<CVA<V>> =
     !args[0] || args[0] instanceof Array ? {} : (args.shift() as any);
   const cva: CVA<V> = {
@@ -292,7 +200,7 @@ function styled<
         }
       }
       if (styles[0].length > 1 || styles[0][0]) {
-        const StyledOriginalComponent = applyRnCSS(
+        const StyledOriginalComponent = applyStyled(
           C,
           (O) => (OriginalComponent = O || OriginalComponent),
         )(...styles);

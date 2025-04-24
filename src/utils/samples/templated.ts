@@ -12,9 +12,8 @@ export const args = [
 export const expected = [
   [
     `
-    webactive1: 
-      webbackground-color: blue§
-    ;`,
+    &:active {
+      background-color: blue;
+    }`,
   ],
-  [],
 ];
