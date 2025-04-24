@@ -48,3 +48,13 @@ export const fixFontStyle = (style: any) => {
   }
   return style;
 };
+
+export const fixViewStyle = (style: any) => {
+  if (!style) {
+    return { display: "block", flexDirection: "row" };
+  }
+  const styles = [...(style instanceof Array ? style : [style])];
+  styles[0].display = styles[0].display || "block";
+  styles[0].flexDirection = styles[0].flexDirection || "row";
+  return style;
+};

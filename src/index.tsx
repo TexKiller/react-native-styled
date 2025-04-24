@@ -20,6 +20,7 @@ import {
   View as RNView,
   TextInputProps,
   TextProps,
+  ViewProps,
 } from "react-native";
 import rnCSS from "rn-css";
 import ShadowedText from "./components/ShadowedText";
@@ -28,8 +29,8 @@ import VariablesWrapper from "./components/VariablesWrapper";
 import WebSelectors from "./components/WebSelectors";
 import { applyRnCSS, css } from "./utils/css";
 import { CVA } from "./utils/cva";
-import { fixFontStyle } from "./utils/fonts";
 import { camel2kebab } from "./utils/string";
+import { fixFontStyle, fixViewStyle } from "./utils/styles";
 
 export { css } from "./utils/css";
 export * from "./utils/cva";
@@ -341,6 +342,8 @@ styled.TouchableHighlight = styled(RNTouchableHighlight);
 styled.TouchableNativeFeedback = styled(RNTouchableNativeFeedback);
 styled.TouchableOpacity = styled(RNTouchableOpacity);
 styled.TouchableWithoutFeedback = styled(RNTouchableWithoutFeedback);
-styled.View = styled(RNView);
+styled.View = styled((props: ViewProps) => (
+  <RNView {...props} style={fixViewStyle(props.style)} />
+));
 
 export default styled;

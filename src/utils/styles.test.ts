@@ -1,4 +1,4 @@
-import { fixFontStyle } from "./fonts";
+import { fixFontStyle } from "./styles";
 
 describe("fixFontStyle", () => {
   it("should return the correct font weight", () => {
