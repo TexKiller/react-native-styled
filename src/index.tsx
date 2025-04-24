@@ -148,17 +148,18 @@ function styled<
     compoundVariants: cvaParam.compoundVariants || [],
     defaultVariants: cvaParam.defaultVariants || {},
   };
-  const styledComponent =
-    (
-      ...temp: TemplatedParameters
-    ): React.FunctionComponent<P & V & { css?: TemplatedParameters }> =>
-    (props) => {
+  const styledComponent = (
+    ...temp: TemplatedParameters
+  ): React.ForwardRefExoticComponent<
+    React.PropsWithoutRef<P & V & { css?: TemplatedParameters }>
+  > =>
+    React.forwardRef((props, ref) => {
       let styles: TemplatedParameters = css(
         temp[0] ? temp : ([[""]] as any),
         ...(props.css ? [props.css] : []),
       );
       if (cvaParam.variants || cvaParam.compoundVariants) {
-        const variantProps: P & V = {
+        const variantProps = {
           ...cva.defaultVariants,
           ...props,
         };
@@ -204,10 +205,10 @@ function styled<
           C,
           (O) => (OriginalComponent = O || OriginalComponent),
         )(...styles);
-        return <StyledOriginalComponent {...props} />;
+        return <StyledOriginalComponent {...(props as any)} ref={ref} />;
       }
-      return <C {...props} />;
-    };
+      return <C {...(props as any)} ref={ref} />;
+    });
   if (
     cvaParam.variants ||
     cvaParam.compoundVariants ||
