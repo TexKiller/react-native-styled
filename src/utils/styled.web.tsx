@@ -8,7 +8,7 @@ export default (C: Parameters<typeof styled>[0]) =>
       React.useImperativeHandle(ref, () => innerRef.current!, []);
 
       const onRef = (ref: any) => {
-        if (typeof (props as any)?.className === "string") {
+        if (ref && typeof (props as any)?.className === "string") {
           ref.setAttribute("class", (props as any).className);
         }
         innerRef.current = ref;
