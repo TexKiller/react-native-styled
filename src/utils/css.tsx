@@ -33,7 +33,7 @@ export const css = (
       return templated[0];
     }
     const first = templated.shift()!;
-    return [
+    args = [
       templated.reduce(
         (acc, curr) => {
           acc[acc.length - 1] += curr[0][0];
@@ -46,7 +46,17 @@ export const css = (
       ...templated.map((c) => c.slice(1)).flat(),
     ] as TemplatedParameters;
   }
-  return args as TemplatedParameters;
+  const [c, ...functs] = args as TemplatedParameters;
+  const chunks = [...c];
+  for (let i = 0; i < functs.length; i++) {
+    if (typeof functs[i] === "string") {
+      const s = functs.splice(i, 1)[0] as string;
+      chunks[i] += s;
+      chunks[i] += chunks.splice(i + 1, 1)[0];
+      i--;
+    }
+  }
+  return [chunks, ...functs] as any as TemplatedParameters;
 };
 
 export const applyStyled =

@@ -4,14 +4,6 @@ export const useTemplated = (
 ) => {
   const chunks = [...args[0]] as string[];
   const functs = args.slice(1) as (typeof args)[1][];
-  for (let i = 0; i < functs.length; i++) {
-    if (typeof functs[i] === "string") {
-      const s = functs.splice(i, 1)[0] as string;
-      chunks[i] += s;
-      chunks[i] += chunks.splice(i + 1, 1)[0];
-      i--;
-    }
-  }
   for (let i = 0; i < chunks.length; i++) {
     if (typeof chunks[i] !== "string") {
       continue;
