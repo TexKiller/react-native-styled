@@ -32,9 +32,14 @@ import { fixFontStyle, fixViewStyle } from "./utils/styles";
 
 const oldCreateElement = React.createElement;
 React.createElement = ((...args: Parameters<typeof React.createElement>) => {
-  const className = (args[1] as any)?.testId || "";
-  args[1] = { ...(args[1] || {}), className } as any;
-  delete (args[1] as any).testId;
+  if (typeof args[0] === "string") {
+    const className = (args[1] as any)?.testId || "";
+    args[1] = { ...(args[1] || {}), className } as any;
+    if (!className) {
+      delete (args[1] as any).className;
+    }
+    delete (args[1] as any).testId;
+  }
   return oldCreateElement(...args);
 }) as any;
 
