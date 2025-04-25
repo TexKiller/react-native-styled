@@ -22,7 +22,7 @@ import {
   TextProps,
   ViewProps,
 } from "react-native";
-import originalStyled from "./utils/styled";
+import { TemplatedParameters } from "./utils/styled";
 import ShadowedText from "./components/ShadowedText";
 import ShadowedView from "./components/ShadowedView";
 import VariablesWrapper from "./components/VariablesWrapper";
@@ -32,8 +32,7 @@ import { fixFontStyle, fixViewStyle } from "./utils/styles";
 
 export { css } from "./utils/css";
 export * from "./utils/cva";
-
-type TemplatedParameters = Parameters<ReturnType<typeof originalStyled>>;
+export { TemplatedParameters } from "./utils/styled";
 
 function styled<P extends { style?: S }, S = P["style"]>(
   OriginalComponent: React.ComponentType<P>,

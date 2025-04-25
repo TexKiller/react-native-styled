@@ -9,19 +9,27 @@ import {
   TouchableWithoutFeedback as RNTouchableWithoutFeedback,
   View as RNView,
 } from "react-native";
-import styled, { SharedValue } from "./styled";
+import styled, { SharedValue, TemplatedParameters } from "./styled";
 import { useTemplated } from "./templated";
 
-type TemplatedParameters = Parameters<ReturnType<typeof styled>>;
-
-export const css = (...args: TemplatedParameters | TemplatedParameters[]) => {
-  if (args[0]?.[0] instanceof Array) {
-    if (args.length === 1) {
-      return args[0] as TemplatedParameters;
+export const css = (
+  ...args:
+    | TemplatedParameters
+    | (
+        | TemplatedParameters
+        | ((...args: TemplatedParameters | []) => TemplatedParameters)
+      )[]
+) => {
+  if (args[0] instanceof Function || args[0][0] instanceof Array) {
+    const templated: TemplatedParameters[] = args.map((arg) =>
+      arg instanceof Function ? (arg as any)() : arg,
+    );
+    if (templated.length === 1) {
+      return templated[0];
     }
-    const first = args.shift() as TemplatedParameters;
+    const first = templated.shift()!;
     return [
-      (args as TemplatedParameters[]).reduce(
+      templated.reduce(
         (acc, curr) => {
           acc[acc.length - 1] += curr[0][0];
           acc.push(...curr[0].slice(1));
@@ -30,7 +38,7 @@ export const css = (...args: TemplatedParameters | TemplatedParameters[]) => {
         [...first[0]],
       ) as any,
       ...first.slice(1),
-      ...(args as TemplatedParameters[]).map((c) => c.slice(1)).flat(),
+      ...templated.map((c) => c.slice(1)).flat(),
     ] as TemplatedParameters;
   }
   return args as TemplatedParameters;

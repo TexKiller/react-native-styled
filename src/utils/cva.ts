@@ -1,7 +1,5 @@
-import styled from "./styled";
+import { TemplatedParameters } from "./styled";
 import { Flat, Narrow } from "./types";
-
-type TemplatedParameters = Parameters<ReturnType<typeof styled>>;
 
 export type CVA<V extends Record<string, any>> = {
   variants: {
