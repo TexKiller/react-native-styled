@@ -58,7 +58,7 @@ export const applyStyled =
     if (Platform.OS === "web") {
       const Component = React.forwardRef<any, any>((props, ref) => {
         const onRef = (r: any) => {
-          if (r) {
+          if (r && r.getAttribute && r.setAttribute) {
             let className = r.getAttribute("class") || "";
             if (typeof (props as any)?.className === "string") {
               className += " " + (props as any).className;
@@ -67,11 +67,11 @@ export const applyStyled =
               "class",
               className.replace(/(?<=^|\s)css-[^ ]*\s/, "").trim(),
             );
-            if (typeof ref === "function") {
-              ref(r);
-            } else if (ref) {
-              ref.current = r;
-            }
+          }
+          if (typeof ref === "function") {
+            ref(r);
+          } else if (ref) {
+            ref.current = r;
           }
         };
 
