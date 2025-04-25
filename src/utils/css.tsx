@@ -17,7 +17,12 @@ export const css = (
     | TemplatedParameters
     | (
         | TemplatedParameters
-        | ((...args: TemplatedParameters | []) => TemplatedParameters)
+        | ((
+            ...args: [
+              TemplatedParameters[0] | undefined,
+              ...(TemplatedParameters[1] | undefined)[],
+            ]
+          ) => TemplatedParameters)
       )[]
 ) => {
   if (args[0] instanceof Function || args[0][0] instanceof Array) {
