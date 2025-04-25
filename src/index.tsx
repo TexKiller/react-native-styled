@@ -71,10 +71,10 @@ function styled<
     | [Partial<CVA<V>>, ...TemplatedParameters[]]
     | [...TemplatedParameters[]]
 ) {
-  const Component = ({
-    OriginalComponent,
-    ...props
-  }: P & { OriginalComponent: React.ComponentType<P> }) => {
+  const Component = React.forwardRef<
+    React.ComponentType<P>,
+    P & { OriginalComponent: React.ComponentType<P> }
+  >(({ OriginalComponent, ...props }, ref) => {
     const styleEntries = Object.entries(
       props.style instanceof Array
         ? props.style.reduce((s, c) => ({ ...c, ...s }), {})
@@ -87,15 +87,16 @@ function styled<
           {...props}
           newVars={newVars}
           OriginalComponent={OriginalComponent}
+          ref={ref}
         />
       );
     }
-    return <OriginalComponent {...(props as any)} />;
-  };
+    return <OriginalComponent {...(props as any)} ref={ref} />;
+  });
   const C: React.ComponentType<P> =
     Platform.OS === "web"
       ? OriginalComponent
-      : (props: P) => {
+      : (React.forwardRef<React.ReactNode, P>((props, ref) => {
           const styleEntries = Object.entries(
             props.style instanceof Array
               ? props.style.reduce((s, c) => ({ ...c, ...s }), {})
@@ -113,18 +114,20 @@ function styled<
           if (!shadowedViewEntries.length) {
             return (
               <Component
-                {...props}
+                {...(props as any)}
                 style={Object.fromEntries(styleEntries)}
                 OriginalComponent={OriginalComponent}
+                ref={ref}
               />
             );
           }
           if ((OriginalComponent as any) === RNView) {
             return (
               <Component
-                {...props}
+                {...(props as any)}
                 style={Object.fromEntries(styleEntries)}
                 OriginalComponent={ShadowedView as any}
+                ref={ref}
               />
             );
           }
@@ -134,13 +137,14 @@ function styled<
           return (
             <ShadowedView style={Object.fromEntries(shadowedViewEntries)}>
               <Component
-                {...props}
+                {...(props as any)}
                 style={Object.fromEntries(nonShadowEntries)}
                 OriginalComponent={OriginalComponent}
+                ref={ref}
               />
             </ShadowedView>
           );
-        };
+        }) as any);
   const cvaParam: Partial<CVA<V>> =
     !args[0] || args[0] instanceof Array ? {} : (args.shift() as any);
   const cva: CVA<V> = {

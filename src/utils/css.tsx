@@ -36,7 +36,7 @@ export const css = (...args: TemplatedParameters | TemplatedParameters[]) => {
   return args as TemplatedParameters;
 };
 
-export const applyStyled = <P extends { style?: S }, S>(
+export const applyStyled = <P extends { style?: S }, S = P["style"]>(
   C: React.ComponentType<P>,
   component: (C?: React.ComponentType<P>) => React.ComponentType<P>,
 ) => {
