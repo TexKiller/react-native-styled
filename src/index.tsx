@@ -30,6 +30,13 @@ import { applyStyled, css } from "./utils/css";
 import { CVA } from "./utils/cva";
 import { fixFontStyle, fixViewStyle } from "./utils/styles";
 
+React.createElement = ((...args: Parameters<typeof React.createElement>) => {
+  const className = (args[1] as any)?.testId || "";
+  args[1] = { ...(args[1] || {}), className } as any;
+  delete (args[1] as any).testId;
+  return React.createElement(...args);
+}) as any;
+
 export { css } from "./utils/css";
 export * from "./utils/cva";
 export { TemplatedParameters } from "./utils/styled";

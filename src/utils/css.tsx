@@ -57,25 +57,9 @@ export const applyStyled =
   (...args: TemplatedParameters) => {
     if (Platform.OS === "web") {
       const Component = React.forwardRef<any, any>((props, ref) => {
-        const onRef = (r: any) => {
-          if (r && r.getAttribute && r.setAttribute) {
-            let className = r.getAttribute("class") || "";
-            if (typeof (props as any)?.className === "string") {
-              className += " " + (props as any).className;
-            }
-            r.setAttribute(
-              "class",
-              className.replace(/(?<=^|\s)css-[^ ]*\s/, "").trim(),
-            );
-          }
-          if (typeof ref === "function") {
-            ref(r);
-          } else if (ref) {
-            ref.current = r;
-          }
-        };
+        props.testId = (props as any).className;
 
-        return <C {...({ ...props, ref: onRef } as any)} />;
+        return <C {...({ ...props, ref } as any)} />;
       });
       if (args[0].length === 1 && !args[0][0]) {
         return Component;
