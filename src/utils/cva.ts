@@ -1,14 +1,15 @@
+import { css } from "./css";
 import { TemplatedParameters } from "./styled";
 import { Flat, Narrow } from "./types";
 
 export type CVA<V extends Record<string, any>> = {
   variants: {
     [k in keyof V]?: {
-      [j in V[k]]?: TemplatedParameters | TemplatedParameters[];
+      [j in V[k]]?: TemplatedParameters | Parameters<typeof css>;
     };
   };
   compoundVariants: ({ [k in keyof V]?: V[k] | V[k][] } & {
-    css: TemplatedParameters | TemplatedParameters[];
+    css: TemplatedParameters | Parameters<typeof css>;
   })[];
   defaultVariants: Partial<V>;
 };
@@ -26,10 +27,10 @@ export const cva = <
         ? string
         : string[]
       : never;
-  } & { css: TemplatedParameters | TemplatedParameters[] })[] = (Record<
+  } & { css: TemplatedParameters | Parameters<typeof css> })[] = (Record<
     never,
     never
-  > & { css: TemplatedParameters | TemplatedParameters[] })[],
+  > & { css: TemplatedParameters | Parameters<typeof css> })[],
   DV extends { [k in keyof DV]: string } = Record<never, never>,
 >(cva: {
   variants?: Narrow<V>;

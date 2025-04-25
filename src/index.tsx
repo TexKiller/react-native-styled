@@ -170,12 +170,13 @@ function styled<
         for (const prop in cva.variants) {
           const variant:
             | TemplatedParameters
-            | TemplatedParameters[]
+            | Parameters<typeof css>
             | undefined = cva.variants[prop]![variantProps[prop]];
           if (variant) {
             styles = css(
               styles,
-              ...(variant[0][0] instanceof Array
+              ...(variant[0] instanceof Function ||
+              variant[0][0] instanceof Array
                 ? (variant as TemplatedParameters[])
                 : [variant as TemplatedParameters]),
             );
@@ -197,7 +198,8 @@ function styled<
           }
           styles = css(
             styles,
-            ...(compoundVariant.css[0][0] instanceof Array
+            ...(compoundVariant.css[0] instanceof Function ||
+            compoundVariant.css[0][0] instanceof Array
               ? (compoundVariant.css as TemplatedParameters[])
               : [compoundVariant.css as TemplatedParameters]),
           );
