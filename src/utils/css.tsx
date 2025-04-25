@@ -57,7 +57,7 @@ export const applyStyled =
   (...args: TemplatedParameters) => {
     if (Platform.OS === "web") {
       const Component = React.forwardRef<any, any>((props, ref) => (
-        <C {...({ ...props, ref, testId: props.className } as any)} />
+        <C {...({ ...props, ref, testID: props.className } as any)} />
       ));
       if (args[0].length === 1 && !args[0][0]) {
         return Component;
