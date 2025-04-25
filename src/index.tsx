@@ -205,14 +205,11 @@ function styled<
           );
         }
       }
-      if (styles[0].length > 1 || styles[0][0]) {
-        const StyledOriginalComponent = applyStyled(
-          C,
-          (O) => (OriginalComponent = O || OriginalComponent),
-        )(...styles);
-        return <StyledOriginalComponent {...(props as any)} ref={ref} />;
-      }
-      return <C {...(props as any)} ref={ref} />;
+      const StyledOriginalComponent = applyStyled(
+        C,
+        (O) => (OriginalComponent = O || OriginalComponent),
+      )(...styles);
+      return <StyledOriginalComponent {...(props as any)} ref={ref} />;
     });
   if (
     cvaParam.variants ||
@@ -236,43 +233,29 @@ styled.Switch = styled(RNSwitch);
 styled.RefreshControl = styled(RNRefreshControl);
 styled.SafeAreaView = styled(RNSafeAreaView);
 styled.Text = styled(
-  React.forwardRef<RNText, TextProps>((props, ref) =>
-    Platform.OS === "web" ? (
-      <RNText
-        {...({ ...props, className: (props as any).className || "" } as any)}
-        ref={ref}
-      />
-    ) : (
-      <RNText {...props} style={fixFontStyle(props.style)} ref={ref} />
-    ),
-  ),
+  Platform.OS === "web"
+    ? RNText
+    : React.forwardRef<RNText, TextProps>((props, ref) => (
+        <RNText {...props} style={fixFontStyle(props.style)} ref={ref} />
+      )),
 );
 styled.TextInput = styled(
-  React.forwardRef<RNTextInput, TextInputProps>((props, ref) => {
-    if (Platform.OS === "web") {
-      (props as any).className = (props as any).className || "";
-      return <RNTextInput {...props} ref={ref} />;
-    }
-    return (
-      <RNTextInput {...props} style={fixFontStyle(props.style)} ref={ref} />
-    );
-  }),
+  Platform.OS === "web"
+    ? RNTextInput
+    : React.forwardRef<RNTextInput, TextInputProps>((props, ref) => (
+        <RNTextInput {...props} style={fixFontStyle(props.style)} ref={ref} />
+      )),
 );
 styled.TouchableHighlight = styled(RNTouchableHighlight);
 styled.TouchableNativeFeedback = styled(RNTouchableNativeFeedback);
 styled.TouchableOpacity = styled(RNTouchableOpacity);
 styled.TouchableWithoutFeedback = styled(RNTouchableWithoutFeedback);
 styled.View = styled(
-  React.forwardRef<RNView, ViewProps>((props, ref) =>
-    Platform.OS === "web" ? (
-      <RNView
-        {...({ ...props, className: (props as any).className || "" } as any)}
-        ref={ref}
-      />
-    ) : (
-      <RNView {...props} style={fixViewStyle(props.style)} ref={ref} />
-    ),
-  ),
+  Platform.OS === "web"
+    ? RNView
+    : React.forwardRef<RNView, ViewProps>((props, ref) => (
+        <RNView {...props} style={fixViewStyle(props.style)} ref={ref} />
+      )),
 );
 
 export default styled;
