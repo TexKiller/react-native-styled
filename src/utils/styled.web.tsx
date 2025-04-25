@@ -6,12 +6,17 @@ export default (C: Parameters<typeof styled>[0]) =>
     React.forwardRef((props, ref) => {
       const innerRef = React.useRef<any>(null);
       React.useImperativeHandle(ref, () => innerRef.current!, []);
-      if (innerRef.current && (props as any)?.className) {
-        innerRef.current.setNativeProps({
-          className: (props as any).className,
-        });
-      }
-      return <C {...props} ref={innerRef} />;
+
+      const onRef = (ref: any) => {
+        innerRef.current = ref;
+        if (innerRef.current && (props as any)?.className) {
+          innerRef.current.setNativeProps({
+            className: (props as any).className,
+          });
+        }
+      };
+
+      return <C {...props} ref={onRef} />;
     }),
   );
 
