@@ -10,9 +10,7 @@ export default (C: Parameters<typeof styled>[0]) =>
       const onRef = (ref: any) => {
         innerRef.current = ref;
         if (innerRef.current && (props as any)?.className) {
-          innerRef.current.setNativeProps({
-            className: (props as any).className,
-          });
+          innerRef.current.setAttribute("class", (props as any).className);
         }
       };
 
