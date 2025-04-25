@@ -43,7 +43,7 @@ function styled<P extends { style?: S }, S = P["style"]>(
 >;
 function styled<P extends { style?: S }, S = P["style"]>(
   OriginalComponent: React.ComponentType<P>,
-  ...args: [...TemplatedParameters[]]
+  ...args: Parameters<typeof css>
 ): React.ForwardRefExoticComponent<
   { [p in keyof P]: P[p] } & { css?: TemplatedParameters }
 >;
@@ -54,7 +54,7 @@ function styled<
 >(
   OriginalComponent: React.ComponentType<P>,
   cva: CVA<V>,
-  ...args: [...TemplatedParameters[]]
+  ...args: Parameters<typeof css>
 ): React.ForwardRefExoticComponent<
   { [p in keyof P]: P[p] } & { [v in keyof V]?: V[v] } & {
     css?: TemplatedParameters;
@@ -67,8 +67,8 @@ function styled<
 >(
   OriginalComponent: React.ComponentType<P>,
   ...args:
-    | [Partial<CVA<V>>, ...TemplatedParameters[]]
-    | [...TemplatedParameters[]]
+    | [Partial<CVA<V>>, ...Parameters<typeof css>]
+    | [...Parameters<typeof css>]
 ) {
   const Component = React.forwardRef<
     React.ComponentType<P>,
