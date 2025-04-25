@@ -4,14 +4,22 @@ import styled from "styled-components";
 export default (C: Parameters<typeof styled>[0]) =>
   styled(
     React.forwardRef((props, ref) => {
-      const innerRef = React.useRef<any>(null);
-      React.useImperativeHandle(ref, () => innerRef.current!, []);
-
-      const onRef = (ref: any) => {
-        if (ref && typeof (props as any)?.className === "string") {
-          ref.setAttribute("class", (props as any).className);
+      const onRef = (r: any) => {
+        if (r) {
+          let className = r.getAttribute("class") || "";
+          if (typeof (props as any)?.className === "string") {
+            className += " " + (props as any).className;
+          }
+          r.setAttribute(
+            "class",
+            className.replace(/(?<=^|\s)css-[^ ]*\s/, "").trim(),
+          );
+          if (typeof ref === "function") {
+            ref(r);
+          } else if (ref) {
+            ref.current = r;
+          }
         }
-        innerRef.current = ref;
       };
 
       return <C {...props} ref={onRef} />;
