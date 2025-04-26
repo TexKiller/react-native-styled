@@ -60,11 +60,10 @@ export const fixViewStyle = (style: any) => {
     return { flexDirection: "column" };
   }
   const styles = [...(style instanceof Array ? style : [style])];
-  styles[0].display = styles[0].display || "block";
-  const display = styles.filter(({ display }) => display).pop().display;
+  const display = styles.filter((s) => s.display).pop()?.display;
   const flexDirection = styles
-    .filter(({ flexDirection }) => flexDirection)
-    .pop().flexDirection;
+    .filter((s) => s.flexDirection)
+    .pop()?.flexDirection;
   styles[styles.length - 1].flexDirection =
     display === "flex" ? flexDirection || "row" : "column";
   return style;
