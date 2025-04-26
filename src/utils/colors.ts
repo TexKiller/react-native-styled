@@ -25,8 +25,9 @@ const toRgb: Record<string, (c: any) => number[]> = {
   lrgb: space.lrgb.rgb,
   munsell: (c) => space.xyz.rgb(space.coloroid.xyz(space.munsell.coloroid(c))),
   osaucs: (c) => space.xyz.rgb(space.osaucs.xyz(c)),
-  oklab: (c) => space.xyz.rgb(space.oklab.xyz(c)),
-  oklch: (c) => space.xyz.rgb(space.lchab.xyz(c)),
+  oklab: (c) => space.oklab.rgb!(c),
+  oklch: (c) =>
+    space.xyz.rgb(space.lchab.xyz([c[0] * 100, (c[1] / 0.4) * 150, c[2]])),
   rgb: (c) => c,
   tsl: space.tsl.rgb,
   ucs: (c) => space.xyz.rgb(space.ucs.xyz(c)),
@@ -53,5 +54,5 @@ export const parseColors = (styles: string) =>
   styles.replace(colorRegExp, (c, s) => {
     const color = parse(c);
     const rgb = toRgb[s](color.values);
-    return `rgba(${rgb.join(",")},${color.alpha})`;
+    return `rgba(${rgb.join(",")}${color.alpha !== undefined ? `,${color.alpha}` : ""})`;
   });
