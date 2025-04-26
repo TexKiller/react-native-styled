@@ -57,10 +57,15 @@ export const fixFontStyle = (style: any) => {
 
 export const fixViewStyle = (style: any) => {
   if (!style) {
-    return { display: "block", flexDirection: "row" };
+    return { flexDirection: "column" };
   }
   const styles = [...(style instanceof Array ? style : [style])];
   styles[0].display = styles[0].display || "block";
-  styles[0].flexDirection = styles[0].flexDirection || "row";
+  const display = styles.filter(({ display }) => display).pop().display;
+  const flexDirection = styles
+    .filter(({ flexDirection }) => flexDirection)
+    .pop().flexDirection;
+  styles[styles.length - 1].flexDirection =
+    display === "flex" ? flexDirection || "row" : "column";
   return style;
 };
