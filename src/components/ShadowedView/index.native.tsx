@@ -7,7 +7,6 @@ const ShadowedView = (
   props: ViewProps & { style?: { styledBoxShadow?: string } },
 ) => {
   const style = props.style as ViewStyle & { styledBoxShadow?: string };
-  style.shadowOpacity = 1;
   if (!style.styledBoxShadow) {
     return <Component {...props} />;
   }
@@ -39,10 +38,6 @@ const ShadowedView = (
           : ""),
     ),
   );
-  for (const key of Object.keys(style).filter((k) => k.startsWith("margin"))) {
-    styles[0][key as keyof ViewStyle] = style[key as keyof ViewStyle] as any;
-    delete style[key as keyof ViewStyle];
-  }
   const firstStyle = styles.shift();
   return styles.reduce(
     (child, style) => <Component style={style}>{child}</Component>,

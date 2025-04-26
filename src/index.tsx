@@ -30,18 +30,20 @@ import { applyStyled, css } from "./utils/css";
 import { CVA } from "./utils/cva";
 import { fixFontStyle, fixViewStyle } from "./utils/styles";
 
-const oldCreateElement = React.createElement;
-React.createElement = ((...args: Parameters<typeof React.createElement>) => {
-  if (typeof args[0] === "string") {
-    const className = (args[1] as any)?.["data-testid"] || "";
-    args[1] = { ...(args[1] || {}), className } as any;
-    if (!className) {
-      delete (args[1] as any).className;
+if (Platform.OS !== "web") {
+  const oldCreateElement = React.createElement;
+  React.createElement = ((...args: Parameters<typeof React.createElement>) => {
+    if (typeof args[0] === "string") {
+      const className = (args[1] as any)?.["data-testid"] || "";
+      args[1] = { ...(args[1] || {}), className } as any;
+      if (!className) {
+        delete (args[1] as any).className;
+      }
+      delete (args[1] as any)["data-testid"];
     }
-    delete (args[1] as any)["data-testid"];
-  }
-  return oldCreateElement(...args);
-}) as any;
+    return oldCreateElement(...args);
+  }) as any;
+}
 
 export { css } from "./utils/css";
 export * from "./utils/cva";
