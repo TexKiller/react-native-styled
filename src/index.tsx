@@ -115,15 +115,7 @@ function styled<
             props.style instanceof Array
               ? props.style.reduce((s, c) => ({ ...c, ...s }), {})
               : (props.style ?? {}),
-          ).map(([k, v]) => [
-            k,
-            typeof v !== "string"
-              ? v
-              : v.replace(
-                  /(?<=^|\s)rgb(rgba?|hsla?|oklch)\(([^)]+)\)/g,
-                  (_, word, args) => `${word}(${args.replace(/§/g, " ")})`,
-                ),
-          ]);
+          );
           const shadowedTextEntries = styleEntries.filter(
             ([k]) => k === "styledTextShadow",
           );
