@@ -22,12 +22,12 @@ import {
   TextProps,
   ViewProps,
 } from "react-native";
-import { TemplatedParameters } from "./utils/styled";
 import ShadowedText from "./components/ShadowedText";
 import ShadowedView from "./components/ShadowedView";
 import VariablesWrapper from "./components/VariablesWrapper";
 import { applyStyled, css } from "./utils/css";
 import { CVA } from "./utils/cva";
+import { TemplatedParameters } from "./utils/styled";
 import { fixFontStyle, fixViewStyle } from "./utils/styles";
 
 if (Platform.OS !== "web") {
@@ -115,7 +115,15 @@ function styled<
             props.style instanceof Array
               ? props.style.reduce((s, c) => ({ ...c, ...s }), {})
               : (props.style ?? {}),
-          );
+          ).map(([k, v]) => [
+            k,
+            typeof v !== "string"
+              ? v
+              : v.replace(
+                  /(?<=^|\s)rgb(rgba?|hsla?|oklch)\(([^)]+)\)/g,
+                  (_, word, args) => `${word}(${args.replace(/§/g, " ")})`,
+                ),
+          ]);
           const shadowedTextEntries = styleEntries.filter(
             ([k]) => k === "styledTextShadow",
           );

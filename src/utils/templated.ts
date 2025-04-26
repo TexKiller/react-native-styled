@@ -8,10 +8,12 @@ export const useTemplated = (
     if (typeof chunks[i] !== "string") {
       continue;
     }
-    chunks[i] = chunks[i].replace(
-      /(?<!styled-)(box-|text-)shadow:/g,
-      (m) => "styled-" + m,
-    );
+    chunks[i] = chunks[i]
+      .replace(/(?<!styled-)(box-|text-)shadow:/g, (m) => "styled-" + m)
+      .replace(
+        /(?<=^|\s)(rgba?|hsla?|oklch)\(([^)]+)\)/g,
+        (_, word, args) => `rgb${word}(${args.replace(/\s/g, "§")})`,
+      );
     const varRegExp = /var\(--[^),]+/g;
     const varMatch = varRegExp.exec(chunks[i]);
     if (!varMatch) {
