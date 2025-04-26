@@ -11,7 +11,7 @@ const ShadowedView = (
   if (!style.styledBoxShadow) {
     return <Component {...props} />;
   }
-  const shadows = style.styledBoxShadow.split(/(?<=(^[^(]*|\)[^(]*))(,)/g);
+  const shadows = style.styledBoxShadow.split(/(?<=(^[^(]*|\)[^(]*)),/gi);
   delete style.styledBoxShadow;
   if (shadows.length === 1) {
     Object.assign(style, cssToRNStyle(`box-shadow: ${shadows[0]}`));
