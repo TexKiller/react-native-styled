@@ -111,7 +111,7 @@ function styled<
     Platform.OS === "web"
       ? OriginalComponent
       : (React.forwardRef<React.ReactNode, P>((props, ref) => {
-          const styleEntries = Object.entries(
+          const styleEntries: [string, any][] = Object.entries(
             props.style instanceof Array
               ? props.style.reduce((s, c) => ({ ...c, ...s }), {})
               : (props.style ?? {}),
