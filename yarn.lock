@@ -2978,10 +2978,33 @@ __metadata:
   languageName: node
   linkType: hard
 
+"color-name@npm:^2.0.0":
+  version: 2.0.0
+  resolution: "color-name@npm:2.0.0"
+  checksum: 10/10a1addae41de2987d6b90dbd3cfade266c2e6f680ce21749911df4493b4fae07654862c6b5358bdd13e155461acb4eedaa5e0ba172bf13542cdcca10866cf2b
+  languageName: node
+  linkType: hard
+
 "color-name@npm:~1.1.4":
   version: 1.1.4
   resolution: "color-name@npm:1.1.4"
   checksum: 10/b0445859521eb4021cd0fb0cc1a75cecf67fceecae89b63f62b201cca8d345baf8b952c966862a9d9a2632987d4f6581f0ec8d957dfacece86f0a7919316f610
+  languageName: node
+  linkType: hard
+
+"color-parse@npm:^2.0.2":
+  version: 2.0.2
+  resolution: "color-parse@npm:2.0.2"
+  dependencies:
+    color-name: "npm:^2.0.0"
+  checksum: 10/64963587057e024edbce3f009e73e69b1d1b31d6f9955eed853748b8cb14d4e3bb49064da9c7452a22f5326a1197fa6c483483a53868e815f4cba30b6b1c36cc
+  languageName: node
+  linkType: hard
+
+"color-space@npm:^2.3.1":
+  version: 2.3.1
+  resolution: "color-space@npm:2.3.1"
+  checksum: 10/574885c366e9ad4fddaed174f8ccd2529346834712c6d86168331527176d3eb997dbeef495756397ee21e52e9cb31ee7e60e8d81f17ece96358f8329dbb7265f
   languageName: node
   linkType: hard
 
@@ -3136,6 +3159,8 @@ __metadata:
     "@types/jest": "npm:^29.0.0"
     "@types/react": "npm:*"
     chokidar: "npm:^3.5.3"
+    color-parse: "npm:^2.0.2"
+    color-space: "npm:^2.3.1"
     dotenv: "npm:^16.4.5"
     eslint: "npm:^8.21.0"
     jest: "npm:29.7.0"

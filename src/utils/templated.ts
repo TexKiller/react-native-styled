@@ -1,3 +1,5 @@
+import { parseColors } from "./colors";
+
 export const useTemplated = (
   args: Parameters<ReturnType<typeof import("./styled").default>>,
   variables: Record<string, typeof args>,
@@ -8,12 +10,10 @@ export const useTemplated = (
     if (typeof chunks[i] !== "string") {
       continue;
     }
-    chunks[i] = chunks[i]
-      .replace(/(?<!styled-)(box-|text-)shadow:/g, (m) => "styled-" + m)
-      .replace(
-        /(?<=^|\s)(rgba?|hsla?|oklch)\(([^)]+)\)/g,
-        (_, word, args) => `rgb${word}(${args.replace(/\s/g, "§")})`,
-      );
+    chunks[i] = parseColors(chunks[i]).replace(
+      /(?<!styled-)(box-|text-)shadow:/g,
+      (m) => "styled-" + m,
+    );
     const varRegExp = /var\(--[^),]+/g;
     const varMatch = varRegExp.exec(chunks[i]);
     if (!varMatch) {
