@@ -11,10 +11,15 @@ const ShadowedView = (
   if (!style.styledBoxShadow) {
     return <Component {...props} />;
   }
-  const shadows = style.styledBoxShadow.split(/(?<=(^[^(]*|\)[^(]*)),/gi);
+  const shadows = style.styledBoxShadow
+    .replace(/(?<=(^[^(]*|\)[^(]*)),/g, "§")
+    .split("§");
   delete style.styledBoxShadow;
   if (shadows.length === 1) {
-    Object.assign(style, cssToRNStyle(`box-shadow: ${shadows[0]}`));
+    Object.assign(
+      style,
+      cssToRNStyle(`box-shadow: ${shadows[0]}; shadow-opacity: 1`),
+    );
     return <Component {...props} />;
   }
   const styles = shadows.map((shadow) =>

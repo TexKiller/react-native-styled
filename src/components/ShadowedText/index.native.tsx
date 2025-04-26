@@ -10,7 +10,9 @@ const ShadowedView = (
   if (!style.styledTextShadow) {
     return <Text {...props} />;
   }
-  const shadows = style.styledTextShadow.split(/(?<=(^[^(]*|\)[^(]*))(,)/g);
+  const shadows = style.styledTextShadow
+    .replace(/(?<=(^[^(]*|\)[^(]*)),/g, "§")
+    .split("§");
   delete style.styledTextShadow;
   const firstStyle = cssToRNStyle(`text-shadow: ${shadows.shift()}`);
   const styles = shadows.map((shadow) =>
