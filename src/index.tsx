@@ -5,7 +5,6 @@ import {
   Image as RNImage,
   ImageBackground as RNImageBackground,
   KeyboardAvoidingView as RNKeyboardAvoidingView,
-  Modal as RNModal,
   Pressable as RNPressable,
   RefreshControl as RNRefreshControl,
   SafeAreaView as RNSafeAreaView,
@@ -116,6 +115,15 @@ function styled<
               ? props.style.reduce((s, c) => ({ ...c, ...s }), {})
               : (props.style ?? {}),
           );
+          const lineHeight = styleEntries.find(([k]) => k === "lineHeight");
+          if (lineHeight) {
+            const fontSize = styleEntries.find(([k]) => k === "fontSize") || [
+              0, 17,
+            ];
+            if (lineHeight[1] < fontSize[1] / 2) {
+              lineHeight[1] *= fontSize[1];
+            }
+          }
           const shadowedTextEntries = styleEntries.filter(
             ([k]) => k === "styledTextShadow",
           );
@@ -241,7 +249,6 @@ styled.ActivityIndicator = styled(RNActivityIndicator);
 styled.Image = styled(RNImage);
 styled.ImageBackground = styled(RNImageBackground);
 styled.KeyboardAvoidingView = styled(RNKeyboardAvoidingView);
-styled.Modal = styled(RNModal);
 styled.Pressable = styled(RNPressable);
 styled.ScrollView = styled(RNScrollView);
 styled.Switch = styled(RNSwitch);
