@@ -6,3 +6,13 @@ export type Narrow<A> = Cast<
   }
 >;
 export type Flat<A> = A extends Array<infer W> ? W : A;
+
+export type StringToPrimitive<A> = A extends "true"
+  ? true | "true"
+  : A extends "false"
+    ? false | "false"
+    : A extends "null"
+      ? null | "null"
+      : A extends "undefined"
+        ? undefined | "undefined"
+        : A;
