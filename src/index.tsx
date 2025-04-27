@@ -283,9 +283,9 @@ function styled<
       node.set(
         lastS,
         applyStyled(
-          DefaultStyledComponent,
+          C,
           (O) => (OriginalComponent = O || OriginalComponent),
-        )(...css(...styles)),
+        )(...css(temp, ...styles)),
       );
     }
     return React.forwardRef((props, ref) => {
