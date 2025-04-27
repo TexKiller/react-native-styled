@@ -1,6 +1,6 @@
 import { css } from "./css";
 import { TemplatedParameters } from "./styled";
-import { Flat, Narrow } from "./types";
+import { Flat, Narrow, StringToPrimitive } from "./types";
 
 export type CVA<V extends Record<string, any>> = {
   variants: {
@@ -63,4 +63,4 @@ export const cva = <
   }>;
 
 export type VariantProps<C extends CVA<any>> =
-  C extends CVA<infer V> ? Partial<V> : never;
+  C extends CVA<infer V> ? { [k in keyof V]?: StringToPrimitive<V[k]> } : never;

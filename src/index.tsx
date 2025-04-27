@@ -29,6 +29,7 @@ import { applyStyled, css } from "./utils/css";
 import { CVA } from "./utils/cva";
 import { TemplatedParameters } from "./utils/styled";
 import { fixFontStyle, fixViewStyle, textProperties } from "./utils/styles";
+import { RecursiveMap } from "./utils/types";
 
 if (Platform.OS === "web") {
   const oldCreateElement = React.createElement;
@@ -185,62 +186,115 @@ function styled<
     ...temp: TemplatedParameters
   ): React.ForwardRefExoticComponent<
     React.PropsWithoutRef<P & V & { css?: TemplatedParameters }>
-  > =>
-    React.forwardRef((props, ref) => {
-      let styles: TemplatedParameters = css(
-        temp[0] ? temp : ([[""]] as any),
-        ...(props.css ? [props.css] : []),
-      );
-      if (cvaParam.variants || cvaParam.compoundVariants) {
-        const variantProps = {
-          ...cva.defaultVariants,
-          ...props,
-        };
-        delete (variantProps as any).css;
-        for (const prop in cva.variants) {
-          const variant:
-            | TemplatedParameters
-            | Parameters<typeof css>
-            | undefined = cva.variants[prop]![variantProps[prop]];
-          if (variant) {
-            styles = css(
-              styles,
-              ...(variant[0] instanceof Function ||
-              variant[0][0] instanceof Array
-                ? (variant as TemplatedParameters[])
-                : [variant as TemplatedParameters]),
-            );
-          }
-        }
-        for (const compoundVariant of cva.compoundVariants) {
-          if (
-            (Object.keys(compoundVariant) as (keyof V)[]).find(
-              (prop) =>
-                prop !== "css" &&
-                ![
-                  ...(compoundVariant[prop] instanceof Array
-                    ? compoundVariant[prop]
-                    : [compoundVariant[prop]]),
-                ].includes(variantProps[prop]),
-            )
-          ) {
-            continue;
-          }
-          styles = css(
-            styles,
-            ...(compoundVariant.css[0] instanceof Function ||
-            compoundVariant.css[0][0] instanceof Array
-              ? (compoundVariant.css as TemplatedParameters[])
-              : [compoundVariant.css as TemplatedParameters]),
+  > => {
+    const DefaultStyledComponent = applyStyled(
+      C,
+      (O) => (OriginalComponent = O || OriginalComponent),
+    )(...temp);
+    const variantProps = new Set([
+      ...Object.keys(cva.variants),
+      ...cva.compoundVariants.flatMap((v) => Object.keys(v)),
+    ])
+      .values()
+      .toArray();
+    const cssIndex = variantProps.indexOf("css");
+    if (cssIndex !== -1) {
+      variantProps.splice(cssIndex, 1);
+    }
+    const variantValues = variantProps.map((p) => [
+      ...Object.values(cva.variants[p] || {}),
+      ...cva.compoundVariants.flatMap((v) =>
+        v[p] instanceof Array ? v[p] : [v[p] || ([] as any)],
+      ),
+    ]);
+    const variantStyledComponents: RecursiveMap<typeof DefaultStyledComponent> =
+      new Map();
+    let stacks: any[][] = [[]];
+    const none = Symbol("none");
+    for (const variantValue of variantValues) {
+      stacks = stacks.flatMap((v) => [
+        ...variantValue.map((v2) => [...v, v2]),
+        [...v, none],
+      ]);
+    }
+    for (const stack of stacks) {
+      const vProps: any = {};
+      for (let i = 0; i < stack.length; i++) {
+        vProps[variantProps[i]] = stack[i];
+      }
+      const styles: TemplatedParameters[] = [];
+      for (const prop in cva.variants) {
+        const variant: Parameters<typeof css> | undefined = (cva.variants[
+          prop
+        ] as any)![vProps[prop]];
+        if (variant) {
+          styles.push(
+            ...(variant[0] instanceof Function || variant[0][0] instanceof Array
+              ? (variant as TemplatedParameters[])
+              : [variant as TemplatedParameters]),
           );
         }
       }
-      const StyledOriginalComponent = applyStyled(
-        C,
-        (O) => (OriginalComponent = O || OriginalComponent),
-      )(...styles);
+      for (const compoundVariant of cva.compoundVariants) {
+        if (
+          (Object.keys(compoundVariant) as (keyof V)[]).find(
+            (prop) =>
+              prop !== "css" &&
+              ![
+                ...(compoundVariant[prop] instanceof Array
+                  ? compoundVariant[prop]
+                  : [compoundVariant[prop]]),
+              ].includes(vProps[prop]),
+          )
+        ) {
+          continue;
+        }
+        styles.push(
+          ...(compoundVariant.css[0] instanceof Function ||
+          compoundVariant.css[0][0] instanceof Array
+            ? (compoundVariant.css as TemplatedParameters[])
+            : [compoundVariant.css as TemplatedParameters]),
+        );
+      }
+      if (!styles.length) {
+        continue;
+      }
+      let node = variantStyledComponents;
+      const lastS = stack.pop();
+      for (const s of stack) {
+        node = node.set(s, node.get(s) || new Map());
+      }
+      node.set(
+        lastS,
+        applyStyled(
+          DefaultStyledComponent,
+          (O) => (OriginalComponent = O || OriginalComponent),
+        )(...css(...styles)),
+      );
+    }
+    return React.forwardRef((props, ref) => {
+      let StyledOriginalComponent = DefaultStyledComponent;
+      if (variantStyledComponents.size) {
+        const vProps = {
+          ...cva.defaultVariants,
+          ...props,
+        };
+        delete (vProps as any).css;
+        let node = variantStyledComponents;
+        for (const prop of variantProps) {
+          node = (node?.get(`${vProps[prop]}`) || node?.get(none)) as any;
+        }
+        StyledOriginalComponent = node as any;
+      }
+      if (props.css) {
+        StyledOriginalComponent = applyStyled(
+          StyledOriginalComponent,
+          (O) => (OriginalComponent = O || OriginalComponent),
+        )(...css(temp, props.css));
+      }
       return <StyledOriginalComponent {...(props as any)} ref={ref} />;
     });
+  };
   if (
     cvaParam.variants ||
     cvaParam.compoundVariants ||
