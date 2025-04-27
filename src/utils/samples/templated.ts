@@ -1,19 +1,14 @@
 export const args = [
   [
     `
-    &:active {
-      background-color: `,
-    `;
-    }`,
+      box-shadow: var(--shadow);
+    `,
   ] as any,
-  "blue",
-] as [TemplateStringsArray, string];
+] as [TemplateStringsArray];
 
 export const expected = [
   [
     `
-    &:active {
-      background-color: blue;
-    }`,
+      styled-box-shadow: variables;`,
   ],
 ];
