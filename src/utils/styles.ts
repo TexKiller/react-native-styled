@@ -1,5 +1,5 @@
 import React from "react";
-import { SharedValue } from "rn-css";
+import { SharedValue } from "./styled";
 
 export const textProperties = [
   "color",
