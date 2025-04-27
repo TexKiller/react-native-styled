@@ -99,7 +99,7 @@ function styled<
       textProperties.includes(k as any),
     );
     newVars.push(
-      ...textProps.map(([k, v]) => [`-CSSNATIVE_${k}`, v] as [string, unknown]),
+      ...textProps.map(([k, v]) => [`-cssnative_${k}`, v] as [string, unknown]),
     );
     if (newVars.length) {
       return (

@@ -39,7 +39,7 @@ export const fixFontStyle = (style: any) => {
     if (vars) {
       for (const p of textProperties) {
         if (s[p] === undefined) {
-          s[p] = vars[`CSSNATIVE_${p}`];
+          s[p] = vars[`cssnative_${p}`];
         }
       }
     }
