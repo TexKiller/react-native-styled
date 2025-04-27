@@ -8,9 +8,9 @@ export type Narrow<A> = Cast<
 export type Flat<A> = A extends Array<infer W> ? W : A;
 
 export type StringToPrimitive<A> = A extends "true"
-  ? true | "true"
+  ? boolean | "true"
   : A extends "false"
-    ? false | "false"
+    ? boolean | "false"
     : A extends "null"
       ? null | "null"
       : A extends "undefined"
