@@ -273,11 +273,14 @@ styled.TextInput = styled(
     ? RNTextInput
     : React.forwardRef<RNTextInput, TextInputProps>((props, ref) => {
         if (!props.style) {
-          props.style = {};
+          props.style = [{}];
         }
-        const firstStyle = (
-          props.style instanceof Array ? props.style : [props.style]
-        )[0] as TextStyle;
+        if (!(props.style instanceof Array)) {
+          props.style = [props.style];
+        }
+        const firstStyle = (props.style[0] = {
+          ...(props.style[0] as any),
+        } as TextStyle);
         firstStyle.color = firstStyle.color ?? "black";
         firstStyle.letterSpacing = firstStyle.letterSpacing ?? 0;
         firstStyle.textTransform = firstStyle.textTransform ?? "none";

@@ -54,20 +54,22 @@ export const fixFontStyle = (style: any) => {
       (s.fontWeight < 700 && `${s.fontFamily}-SemiBold`) ||
       `${s.fontFamily}-Bold`;
   }
-  Object.assign(styles[styles.length - 1], s);
-  return style;
+  styles[styles.length - 1] = { ...styles[styles.length - 1], ...s };
+  return styles;
 };
 
 export const fixViewStyle = (style: any) => {
   if (!style) {
-    return { flexDirection: "column" };
+    return { flexDirection: "column" } as const;
   }
   const styles = [...(style instanceof Array ? style : [style])];
   const display = styles.filter((s) => s.display).pop()?.display;
   const flexDirection = styles
     .filter((s) => s.flexDirection)
     .pop()?.flexDirection;
-  styles[styles.length - 1].flexDirection =
-    display === "flex" ? flexDirection || "row" : "column";
-  return style;
+  styles[styles.length - 1] = {
+    ...styles[styles.length - 1],
+    flexDirection: display === "flex" ? flexDirection || "row" : "column",
+  };
+  return styles;
 };
