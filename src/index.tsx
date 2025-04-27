@@ -73,16 +73,16 @@ function styled<
   ...args: Parameters<typeof css>
 ): React.ForwardRefExoticComponent<
   {
-    [p in keyof P | keyof V]: p extends keyof P
+    [p in keyof P]: p extends keyof P
       ? p extends keyof V
         ? P[p] | VariantProps<CVA<V>>[p]
         : P[p]
       : p extends keyof V
         ? VariantProps<CVA<V>>[p]
         : never;
-  } & {
-    css?: TemplatedParameters;
-  }
+  } & Omit<VariantProps<CVA<V>>, keyof P> & {
+      css?: TemplatedParameters;
+    }
 >;
 function styled<
   P extends { style?: S },
