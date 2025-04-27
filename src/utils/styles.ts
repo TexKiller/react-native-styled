@@ -1,31 +1,60 @@
+import React from "react";
+import { SharedValue } from "rn-css";
+
+export const textProperties = [
+  "color",
+  "direction",
+  "fontFamily",
+  "fontSize",
+  "fontStyle",
+  "fontVariant",
+  "fontWeight",
+  "letterSpacing",
+  "lineHeight",
+  "textAlign",
+  "textDecorationLine",
+  "textTransform",
+] as const;
+
 export const fixFontStyle = (style: any) => {
   if (!style) {
-    return { fontWeight: 400 };
+    style = {};
   }
-  let weight = 400;
-  let family = "";
+  const s: Partial<Record<(typeof textProperties)[number], any>> = {};
   const styles = [...(style instanceof Array ? style : [style])];
   for (const style of styles) {
-    if (style?.fontWeight) {
-      weight = style.fontWeight;
+    for (const p of textProperties) {
+      if (style[p] !== undefined) {
+        s[p] = style[p];
+      }
     }
-    if (style?.fontFamily) {
-      family = style.fontFamily;
+  }
+  if (s.fontWeight === "normal") {
+    s.fontWeight = 400;
+  } else if (s.fontWeight === "bold") {
+    s.fontWeight = 700;
+  }
+  if (textProperties.find((p) => s[p] === undefined)) {
+    const vars: any = React.useContext(SharedValue);
+    if (vars) {
+      for (const p of textProperties) {
+        if (s[p] === undefined) {
+          s[p] = vars[`CSSNATIVE_${p}`];
+        }
+      }
     }
   }
-  if ((weight as any) === "normal") {
-    weight = 400;
-  } else if ((weight as any) === "bold") {
-    weight = 700;
+  if (s.fontWeight === undefined) {
+    s.fontWeight = 400;
   }
-  styles[styles.length - 1].fontWeight = weight;
-  if (family && !family.includes("-")) {
-    styles[styles.length - 1].fontFamily =
-      (weight < 500 && `${family}-Regular`) ||
-      (weight < 600 && `${family}-Medium`) ||
-      (weight < 700 && `${family}-SemiBold`) ||
-      `${family}-Bold`;
+  if (s.fontFamily && !s.fontFamily.includes("-")) {
+    s.fontFamily =
+      (s.fontWeight < 500 && `${s.fontFamily}-Regular`) ||
+      (s.fontWeight < 600 && `${s.fontFamily}-Medium`) ||
+      (s.fontWeight < 700 && `${s.fontFamily}-SemiBold`) ||
+      `${s.fontFamily}-Bold`;
   }
+  Object.assign(styles[styles.length - 1], s);
   return style;
 };
 

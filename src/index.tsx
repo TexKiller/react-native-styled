@@ -19,6 +19,7 @@ import {
   View as RNView,
   TextInputProps,
   TextProps,
+  TextStyle,
   ViewProps,
 } from "react-native";
 import ShadowedText from "./components/ShadowedText";
@@ -27,7 +28,7 @@ import VariablesWrapper from "./components/VariablesWrapper";
 import { applyStyled, css } from "./utils/css";
 import { CVA } from "./utils/cva";
 import { TemplatedParameters } from "./utils/styled";
-import { fixFontStyle, fixViewStyle } from "./utils/styles";
+import { fixFontStyle, fixViewStyle, textProperties } from "./utils/styles";
 
 if (Platform.OS !== "web") {
   const oldCreateElement = React.createElement;
@@ -94,6 +95,12 @@ function styled<
         : (props.style ?? {}),
     );
     const newVars = styleEntries.filter(([k]) => k.startsWith("-"));
+    const textProps = styleEntries.filter(([k]) =>
+      textProperties.includes(k as any),
+    );
+    newVars.push(
+      ...textProps.map(([k, v]) => [`-CSSNATIVE_${k}`, v] as [string, unknown]),
+    );
     if (newVars.length) {
       return (
         <VariablesWrapper
@@ -264,9 +271,24 @@ styled.Text = styled(
 styled.TextInput = styled(
   Platform.OS === "web"
     ? RNTextInput
-    : React.forwardRef<RNTextInput, TextInputProps>((props, ref) => (
-        <RNTextInput {...props} style={fixFontStyle(props.style)} ref={ref} />
-      )),
+    : React.forwardRef<RNTextInput, TextInputProps>((props, ref) => {
+        if (!props.style) {
+          props.style = {};
+        }
+        const firstStyle = (
+          props.style instanceof Array ? props.style : [props.style]
+        )[0] as TextStyle;
+        firstStyle.color = firstStyle.color ?? "black";
+        firstStyle.letterSpacing = firstStyle.letterSpacing ?? 0;
+        firstStyle.textTransform = firstStyle.textTransform ?? "none";
+        firstStyle.textDecorationLine = firstStyle.textDecorationLine ?? "none";
+        firstStyle.textAlign = firstStyle.textAlign ?? "left";
+        firstStyle.fontWeight = firstStyle.fontWeight ?? "normal";
+
+        return (
+          <RNTextInput {...props} style={fixFontStyle(props.style)} ref={ref} />
+        );
+      }),
 );
 styled.TouchableHighlight = styled(RNTouchableHighlight);
 styled.TouchableNativeFeedback = styled(RNTouchableNativeFeedback);
