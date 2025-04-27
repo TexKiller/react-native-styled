@@ -50,29 +50,36 @@ export { css } from "./utils/css";
 export * from "./utils/cva";
 export { TemplatedParameters } from "./utils/styled";
 
-function styled<P extends { style?: S }, S = P["style"]>(
-  OriginalComponent: React.ComponentType<P>,
-): (
-  ...temp: TemplatedParameters
-) => React.ForwardRefExoticComponent<
+function styled<
+  C extends React.ComponentType<P>,
+  P extends { style?: S },
+  S = P["style"],
+>(
+  OriginalComponent: C,
+): (...temp: TemplatedParameters) => React.ForwardRefExoticComponent<
   { [p in keyof P]: P[p] } & {
     css?: TemplatedParameters;
-  } & React.RefAttributes<React.ComponentType<P>>
+  } & React.RefAttributes<C>
 >;
-function styled<P extends { style?: S }, S = P["style"]>(
-  OriginalComponent: React.ComponentType<P>,
+function styled<
+  C extends React.ComponentType<P>,
+  P extends { style?: S },
+  S = P["style"],
+>(
+  OriginalComponent: C,
   ...args: Parameters<typeof css>
 ): React.ForwardRefExoticComponent<
   { [p in keyof P]: P[p] } & {
     css?: TemplatedParameters;
-  } & React.RefAttributes<React.ComponentType<P>>
+  } & React.RefAttributes<C>
 >;
 function styled<
+  C extends React.ComponentType<P>,
   P extends { style?: S },
   V extends Record<string, any>,
   S = P["style"],
 >(
-  OriginalComponent: React.ComponentType<P>,
+  OriginalComponent: C,
   cva: CVA<V>,
   ...args: Parameters<typeof css>
 ): React.ForwardRefExoticComponent<
@@ -86,7 +93,7 @@ function styled<
         : never;
   } & Omit<VariantProps<CVA<V>>, keyof P> & {
       css?: TemplatedParameters;
-    } & React.RefAttributes<React.ComponentType<P>>
+    } & React.RefAttributes<C>
 >;
 function styled<
   P extends { style?: S },
