@@ -26,7 +26,7 @@ import ShadowedText from "./components/ShadowedText";
 import ShadowedView from "./components/ShadowedView";
 import VariablesWrapper from "./components/VariablesWrapper";
 import { applyStyled, css } from "./utils/css";
-import { CVA } from "./utils/cva";
+import { CVA, VariantProps } from "./utils/cva";
 import { TemplatedParameters } from "./utils/styled";
 import { fixFontStyle, fixViewStyle, textProperties } from "./utils/styles";
 import { RecursiveMap } from "./utils/types";
@@ -184,19 +184,19 @@ function styled<
   };
   const styledComponent = (
     ...temp: TemplatedParameters
-  ): React.ForwardRefExoticComponent<
-    React.PropsWithoutRef<P & V & { css?: TemplatedParameters }>
+  ): React.ComponentType<
+    P & VariantProps<CVA<V>> & { css?: TemplatedParameters }
   > => {
     const DefaultStyledComponent = applyStyled(
       C,
       (O) => (OriginalComponent = O || OriginalComponent),
     )(...temp);
-    const variantProps = new Set([
-      ...Object.keys(cva.variants),
-      ...cva.compoundVariants.flatMap((v) => Object.keys(v)),
-    ])
-      .values()
-      .toArray();
+    const variantProps = Array.from(
+      new Set([
+        ...Object.keys(cva.variants),
+        ...cva.compoundVariants.flatMap((v) => Object.keys(v)),
+      ]),
+    );
     const cssIndex = variantProps.indexOf("css");
     if (cssIndex !== -1) {
       variantProps.splice(cssIndex, 1);
@@ -286,14 +286,14 @@ function styled<
         }
         StyledOriginalComponent = node as any;
       }
-      if (props.css) {
+      if ((props as any).css) {
         StyledOriginalComponent = applyStyled(
           StyledOriginalComponent,
           (O) => (OriginalComponent = O || OriginalComponent),
-        )(...css(temp, props.css));
+        )(...css(temp, (props as any).css));
       }
       return <StyledOriginalComponent {...(props as any)} ref={ref} />;
-    });
+    }) as any;
   };
   if (
     cvaParam.variants ||

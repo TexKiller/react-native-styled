@@ -1,6 +1,11 @@
 import { expectAssignable, expectError } from "tsd";
-import { CVA, cva } from "./cva";
-import { InvalidCVASample, PropsSample, ValidCVASample } from "./samples/cva";
+import { CVA, cva, VariantProps } from "./cva";
+import {
+  InvalidCVASample,
+  PropsSample,
+  ValidCVASample,
+  VariantPropsSample,
+} from "./samples/cva";
 
 describe("CVA", () => {
   it("should accept a valid configuration", async () => {
@@ -17,5 +22,11 @@ describe("CVA", () => {
 describe("cva", () => {
   it("should extract props from a valid configuration", async () => {
     expectAssignable<CVA<PropsSample>>(cva({} as ValidCVASample));
+  });
+});
+
+describe("VariantProps", () => {
+  it("should extract props from a valid configuration", async () => {
+    expectAssignable<VariantPropsSample>({} as VariantProps<CVA<PropsSample>>);
   });
 });
