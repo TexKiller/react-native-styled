@@ -209,12 +209,16 @@ function styled<
     if (cssIndex !== -1) {
       variantProps.splice(cssIndex, 1);
     }
-    const variantValues = variantProps.map((p) => [
-      ...Object.keys(cva.variants[p] || {}),
-      ...cva.compoundVariants.flatMap((v) =>
-        v[p] instanceof Array ? v[p] : [v[p] || ([] as any)],
+    const variantValues = variantProps.map((p) =>
+      Array.from(
+        new Set([
+          ...Object.keys(cva.variants[p] || {}),
+          ...cva.compoundVariants.flatMap((v) =>
+            v[p] instanceof Array ? v[p] : v[p] || ([] as any),
+          ),
+        ]),
       ),
-    ]);
+    );
     const variantStyledComponents: RecursiveMap<typeof DefaultStyledComponent> =
       new Map();
     let stacks: any[][] = [[]];
@@ -286,25 +290,26 @@ function styled<
     }
     return React.forwardRef((props, ref) => {
       let StyledOriginalComponent = DefaultStyledComponent;
-      if (variantStyledComponents.size) {
-        const vProps = {
-          ...cva.defaultVariants,
-          ...props,
-        };
-        delete (vProps as any).css;
-        let node = variantStyledComponents;
-        for (const prop of variantProps) {
-          node = (node?.get(`${vProps[prop]}`) || node?.get(none)) as any;
-        }
-        if (node) {
-          StyledOriginalComponent = node as any;
-        }
-      }
       if ((props as any).css) {
         StyledOriginalComponent = applyStyled(
           StyledOriginalComponent,
           (O) => (OriginalComponent = O || OriginalComponent),
         )(...css(temp, (props as any).css));
+      } else {
+        if (variantStyledComponents.size) {
+          const vProps = {
+            ...cva.defaultVariants,
+            ...props,
+          };
+          delete (vProps as any).css;
+          let node = variantStyledComponents;
+          for (const prop of variantProps) {
+            node = (node?.get(`${vProps[prop]}`) || node?.get(none)) as any;
+          }
+          if (node) {
+            StyledOriginalComponent = node as any;
+          }
+        }
       }
       return <StyledOriginalComponent {...(props as any)} ref={ref} />;
     }) as any;
