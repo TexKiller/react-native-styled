@@ -51,9 +51,8 @@ export * from "./utils/cva";
 export { TemplatedParameters } from "./utils/styled";
 
 function styled<
-  C extends React.ComponentType<P>,
-  P extends { style?: S },
-  S = P["style"],
+  C extends React.ComponentType<any>,
+  P = React.ComponentProps<C>,
 >(
   OriginalComponent: C,
 ): (...temp: TemplatedParameters) => React.ForwardRefExoticComponent<
@@ -62,9 +61,8 @@ function styled<
   } & React.RefAttributes<C>
 >;
 function styled<
-  C extends React.ComponentType<P>,
-  P extends { style?: S },
-  S = P["style"],
+  C extends React.ComponentType<any>,
+  P = React.ComponentProps<C>,
 >(
   OriginalComponent: C,
   ...args: Parameters<typeof css>
@@ -74,10 +72,9 @@ function styled<
   } & React.RefAttributes<C>
 >;
 function styled<
-  C extends React.ComponentType<P>,
-  P extends { style?: S },
+  C extends React.ComponentType<any>,
   V extends Record<string, any>,
-  S = P["style"],
+  P = React.ComponentProps<C>,
 >(
   OriginalComponent: C,
   cva: CVA<V>,
