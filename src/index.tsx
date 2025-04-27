@@ -27,7 +27,7 @@ import ShadowedView from "./components/ShadowedView";
 import VariablesWrapper from "./components/VariablesWrapper";
 import { applyStyled, css } from "./utils/css";
 import { CVA, VariantProps } from "./utils/cva";
-import { TemplatedParameters } from "./utils/styled";
+import { TemplatedParameters, SharedValue } from "./utils/styled";
 import { fixFontStyle, fixViewStyle, textProperties } from "./utils/styles";
 import { RecursiveMap } from "./utils/types";
 
@@ -337,9 +337,17 @@ styled.SafeAreaView = styled(RNSafeAreaView);
 styled.Text = styled(
   Platform.OS === "web"
     ? RNText
-    : React.forwardRef<RNText, TextProps>((props, ref) => (
-        <RNText {...props} style={fixFontStyle(props.style)} ref={ref} />
-      )),
+    : React.forwardRef<RNText, TextProps>((props, ref) => {
+        const vars = React.useContext(SharedValue);
+
+        return (
+          <RNText
+            {...props}
+            style={fixFontStyle(props.style, vars)}
+            ref={ref}
+          />
+        );
+      }),
 );
 styled.TextInput = styled(
   Platform.OS === "web"
@@ -361,8 +369,14 @@ styled.TextInput = styled(
         firstStyle.textAlign = firstStyle.textAlign ?? "left";
         firstStyle.fontWeight = firstStyle.fontWeight ?? "normal";
 
+        const vars = React.useContext(SharedValue);
+
         return (
-          <RNTextInput {...props} style={fixFontStyle(props.style)} ref={ref} />
+          <RNTextInput
+            {...props}
+            style={fixFontStyle(props.style, vars)}
+            ref={ref}
+          />
         );
       }),
 );

@@ -1,6 +1,3 @@
-import React from "react";
-import { SharedValue } from "./styled";
-
 export const textProperties = [
   "color",
   "direction",
@@ -16,7 +13,7 @@ export const textProperties = [
   "textTransform",
 ] as const;
 
-export const fixFontStyle = (style: any) => {
+export const fixFontStyle = (style: any, vars: any) => {
   if (!style) {
     style = {};
   }
@@ -34,13 +31,10 @@ export const fixFontStyle = (style: any) => {
   } else if (s.fontWeight === "bold") {
     s.fontWeight = 700;
   }
-  if (textProperties.find((p) => s[p] === undefined)) {
-    const vars: any = React.useContext(SharedValue);
-    if (vars) {
-      for (const p of textProperties) {
-        if (s[p] === undefined) {
-          s[p] = vars[`cssnative_${p}`];
-        }
+  if (textProperties.find((p) => s[p] === undefined) && vars) {
+    for (const p of textProperties) {
+      if (s[p] === undefined) {
+        s[p] = vars[`cssnative_${p}`];
       }
     }
   }
