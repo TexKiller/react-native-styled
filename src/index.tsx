@@ -202,7 +202,7 @@ function styled<
       variantProps.splice(cssIndex, 1);
     }
     const variantValues = variantProps.map((p) => [
-      ...Object.values(cva.variants[p] || {}),
+      ...Object.keys(cva.variants[p] || {}),
       ...cva.compoundVariants.flatMap((v) =>
         v[p] instanceof Array ? v[p] : [v[p] || ([] as any)],
       ),
