@@ -10,10 +10,6 @@ export const useTemplated = (
     if (typeof chunks[i] !== "string") {
       continue;
     }
-    chunks[i] = parseColors(chunks[i]).replace(
-      /(?<!styled-)(box-|text-)shadow:/g,
-      (m) => "styled-" + m,
-    );
     const varRegExp = /var\(--[^),]+/g;
     const varMatch = varRegExp.exec(chunks[i]);
     if (!varMatch) {
@@ -62,6 +58,15 @@ export const useTemplated = (
       1,
     )[0];
     i--;
+  }
+  for (let i = 0; i < chunks.length; i++) {
+    if (typeof chunks[i] !== "string") {
+      continue;
+    }
+    chunks[i] = parseColors(chunks[i]).replace(
+      /(?<!styled-)(box-|text-)shadow:/g,
+      (m) => "styled-" + m,
+    );
   }
   return [chunks, ...functs] as any as typeof args;
 };
