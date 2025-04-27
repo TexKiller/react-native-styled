@@ -292,7 +292,7 @@ function styled<
       let StyledOriginalComponent = DefaultStyledComponent;
       if ((props as any).css) {
         StyledOriginalComponent = applyStyled(
-          StyledOriginalComponent,
+          C,
           (O) => (OriginalComponent = O || OriginalComponent),
         )(...css(temp, (props as any).css));
       } else {
