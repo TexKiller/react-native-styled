@@ -218,6 +218,9 @@ function styled<
       ]);
     }
     for (const stack of stacks) {
+      if (!stack.find((s) => s !== none)) {
+        continue;
+      }
       const vProps: any = {};
       for (let i = 0; i < stack.length; i++) {
         vProps[variantProps[i]] = stack[i];
@@ -262,7 +265,8 @@ function styled<
       let node = variantStyledComponents;
       const lastS = stack.pop();
       for (const s of stack) {
-        node = node.set(s, node.get(s) || new Map());
+        node.set(s, node.get(s) || new Map());
+        node = node.get(s) as any;
       }
       node.set(
         lastS,
@@ -284,7 +288,9 @@ function styled<
         for (const prop of variantProps) {
           node = (node?.get(`${vProps[prop]}`) || node?.get(none)) as any;
         }
-        StyledOriginalComponent = node as any;
+        if (node) {
+          StyledOriginalComponent = node as any;
+        }
       }
       if ((props as any).css) {
         StyledOriginalComponent = applyStyled(
