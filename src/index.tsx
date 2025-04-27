@@ -394,6 +394,10 @@ styled.TextInput = styled(
         firstStyle.textDecorationLine = firstStyle.textDecorationLine ?? "none";
         firstStyle.textAlign = firstStyle.textAlign ?? "left";
         firstStyle.fontWeight = firstStyle.fontWeight ?? "normal";
+        firstStyle.paddingLeft = firstStyle.paddingLeft ?? 12;
+        firstStyle.paddingRight = firstStyle.paddingRight ?? 12;
+        firstStyle.paddingTop = firstStyle.paddingTop ?? 4;
+        firstStyle.paddingBottom = firstStyle.paddingBottom ?? 4;
 
         const vars = React.useContext(SharedValue);
 
