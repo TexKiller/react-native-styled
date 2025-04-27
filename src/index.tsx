@@ -58,7 +58,13 @@ function styled<
 ): (...temp: TemplatedParameters) => React.ForwardRefExoticComponent<
   { [p in keyof P]: P[p] } & {
     css?: TemplatedParameters;
-  } & React.RefAttributes<C>
+  } & React.RefAttributes<
+      C extends React.ComponentClass
+        ? InstanceType<C>
+        : C extends React.FunctionComponent
+          ? ReturnType<C>
+          : C
+    >
 >;
 function styled<
   C extends React.ComponentType<any>,
@@ -69,7 +75,13 @@ function styled<
 ): React.ForwardRefExoticComponent<
   { [p in keyof P]: P[p] } & {
     css?: TemplatedParameters;
-  } & React.RefAttributes<C>
+  } & React.RefAttributes<
+      C extends React.ComponentClass
+        ? InstanceType<C>
+        : C extends React.FunctionComponent
+          ? ReturnType<C>
+          : C
+    >
 >;
 function styled<
   C extends React.ComponentType<any>,
@@ -90,7 +102,13 @@ function styled<
         : never;
   } & Omit<VariantProps<CVA<V>>, keyof P> & {
       css?: TemplatedParameters;
-    } & React.RefAttributes<C>
+    } & React.RefAttributes<
+      C extends React.ComponentClass
+        ? InstanceType<C>
+        : C extends React.FunctionComponent
+          ? ReturnType<C>
+          : C
+    >
 >;
 function styled<
   P extends { style?: S },
