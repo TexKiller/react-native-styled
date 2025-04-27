@@ -30,7 +30,7 @@ import { CVA } from "./utils/cva";
 import { TemplatedParameters } from "./utils/styled";
 import { fixFontStyle, fixViewStyle, textProperties } from "./utils/styles";
 
-if (Platform.OS !== "web") {
+if (Platform.OS === "web") {
   const oldCreateElement = React.createElement;
   React.createElement = ((...args: Parameters<typeof React.createElement>) => {
     if (typeof args[0] === "string") {
