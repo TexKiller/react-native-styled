@@ -16,3 +16,5 @@ export type StringToPrimitive<A> = A extends "true"
       : A extends "undefined"
         ? undefined | "undefined"
         : A;
+
+export type RecursiveMap<T> = Map<any, T | RecursiveMap<T>>;
