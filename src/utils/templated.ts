@@ -43,7 +43,8 @@ export const parseTemplated = (
             parseColors(
               piece.replace(
                 /var\(--([^)]*)(,[^)]*|)\)/gi,
-                (_, varName, def) => shared[varName] || def?.substring(1) || "",
+                (_, varName, def) =>
+                  shared?.[varName] || def?.substring(1) || "",
               ),
             ),
       );
