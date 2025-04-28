@@ -9,8 +9,8 @@ import {
   TouchableWithoutFeedback as RNTouchableWithoutFeedback,
   View as RNView,
 } from "react-native";
-import styled, { SharedValue, TemplatedParameters } from "./styled";
-import { useTemplated } from "./templated";
+import styled, { TemplatedParameters } from "./styled";
+import { parseTemplated } from "./templated";
 
 export const css = (
   ...args:
@@ -74,12 +74,7 @@ export const applyStyled =
       }
       return styled(Component)(...args);
     }
-    const templated = useTemplated(
-      args,
-      (/var\(--[^),]+/g.exec(args[0].join(",")) &&
-        (React.useContext(SharedValue) as any)) ||
-        {},
-    );
+    const templated = parseTemplated(args);
     if (templated[0].length === 1 && !templated[0][0]) {
       return C;
     }

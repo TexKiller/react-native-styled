@@ -9,6 +9,8 @@ export const args = [
 export const expected = [
   [
     `
-      styled-box-shadow: variables;`,
+      styled-box-shadow: `,
+    `;
+    `,
   ],
 ];
