@@ -67,3 +67,96 @@ export const fixViewStyle = (style: any) => {
   };
   return styles;
 };
+
+export const fixStyleEntries = (styleEntries: [string, any][]) => {
+  const lineHeight = styleEntries.find(([k]) => k === "lineHeight");
+  if (lineHeight) {
+    const fontSize = styleEntries.find(([k]) => k === "fontSize") || [0, 17];
+    if (lineHeight[1] < fontSize[1] / 2) {
+      lineHeight[1] *= fontSize[1];
+    }
+  }
+  const direction = styleEntries.find(([k]) => k === "direction");
+  for (const prefix of ["padding", "margin"]) {
+    const inline = styleEntries.find(([k]) => k === `${prefix}Inline`);
+    if (inline) {
+      let inlineStart = styleEntries.find(
+        ([k]) => k === `${prefix}InlineStart`,
+      );
+      if (!inlineStart) {
+        inlineStart = [`${prefix}InlineStart`, undefined];
+        styleEntries.push(inlineStart);
+      }
+      inlineStart[1] = inlineStart[1] ?? inline[1];
+      let inlineEnd = styleEntries.find(([k]) => k === `${prefix}InlineEnd`);
+      if (!inlineEnd) {
+        inlineEnd = [`${prefix}InlineEnd`, undefined];
+        styleEntries.push(inlineEnd);
+      }
+      inlineEnd[1] = inlineEnd[1] ?? inline[1];
+      styleEntries.splice(styleEntries.indexOf(inline), 1);
+    }
+    const inlineStart = styleEntries.find(
+      ([k]) => k === `${prefix}InlineStart`,
+    );
+    if (inlineStart) {
+      const property =
+        direction?.[1] === "rtl" ? `${prefix}Right` : `${prefix}Left`;
+      let entry = styleEntries.find(([k]) => k === property);
+      if (!entry) {
+        entry = [property, undefined];
+        styleEntries.push(entry);
+      }
+      entry[1] = entry[1] ?? inlineStart[1];
+      styleEntries.splice(styleEntries.indexOf(inlineStart), 1);
+    }
+    const inlineEnd = styleEntries.find(([k]) => k === `${prefix}InlineEnd`);
+    if (inlineEnd) {
+      const property =
+        direction?.[1] === "rtl" ? `${prefix}Left` : `${prefix}Right`;
+      let entry = styleEntries.find(([k]) => k === property);
+      if (!entry) {
+        entry = [property, undefined];
+        styleEntries.push(entry);
+      }
+      entry[1] = entry[1] ?? inlineEnd[1];
+      styleEntries.splice(styleEntries.indexOf(inlineEnd), 1);
+    }
+    const block = styleEntries.find(([k]) => k === `${prefix}Block`);
+    if (block) {
+      let blockStart = styleEntries.find(([k]) => k === `${prefix}BlockStart`);
+      if (!blockStart) {
+        blockStart = [`${prefix}BlockStart`, undefined];
+        styleEntries.push(blockStart);
+      }
+      blockStart[1] = blockStart[1] ?? block[1];
+      let blockEnd = styleEntries.find(([k]) => k === `${prefix}BlockEnd`);
+      if (!blockEnd) {
+        blockEnd = [`${prefix}BlockEnd`, undefined];
+        styleEntries.push(blockEnd);
+      }
+      blockEnd[1] = blockEnd[1] ?? block[1];
+      styleEntries.splice(styleEntries.indexOf(block), 1);
+    }
+    const blockStart = styleEntries.find(([k]) => k === `${prefix}BlockStart`);
+    if (blockStart) {
+      let entry = styleEntries.find(([k]) => k === `${prefix}Top`);
+      if (!entry) {
+        entry = [`${prefix}Top`, undefined];
+        styleEntries.push(entry);
+      }
+      entry[1] = entry[1] ?? blockStart[1];
+      styleEntries.splice(styleEntries.indexOf(blockStart), 1);
+    }
+    const blockEnd = styleEntries.find(([k]) => k === `${prefix}BlockEnd`);
+    if (blockEnd) {
+      let entry = styleEntries.find(([k]) => k === `${prefix}Bottom`);
+      if (!entry) {
+        entry = [`${prefix}Bottom`, undefined];
+        styleEntries.push(entry);
+      }
+      entry[1] = entry[1] ?? blockEnd[1];
+      styleEntries.splice(styleEntries.indexOf(blockEnd), 1);
+    }
+  }
+};

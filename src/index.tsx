@@ -27,8 +27,13 @@ import ShadowedView from "./components/ShadowedView";
 import VariablesWrapper from "./components/VariablesWrapper";
 import { applyStyled, css } from "./utils/css";
 import { CVA, VariantProps } from "./utils/cva";
-import { TemplatedParameters, SharedValue } from "./utils/styled";
-import { fixFontStyle, fixViewStyle, textProperties } from "./utils/styles";
+import { SharedValue, TemplatedParameters } from "./utils/styled";
+import {
+  fixFontStyle,
+  fixStyleEntries,
+  fixViewStyle,
+  textProperties,
+} from "./utils/styles";
 import { RecursiveMap } from "./utils/types";
 
 if (Platform.OS === "web") {
@@ -157,15 +162,7 @@ function styled<
               ? props.style.reduce((s, c) => ({ ...c, ...s }), {})
               : (props.style ?? {}),
           );
-          const lineHeight = styleEntries.find(([k]) => k === "lineHeight");
-          if (lineHeight) {
-            const fontSize = styleEntries.find(([k]) => k === "fontSize") || [
-              0, 17,
-            ];
-            if (lineHeight[1] < fontSize[1] / 2) {
-              lineHeight[1] *= fontSize[1];
-            }
-          }
+          fixStyleEntries(styleEntries);
           const shadowedTextEntries = styleEntries.filter(
             ([k]) => k === "styledTextShadow",
           );
