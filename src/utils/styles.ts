@@ -159,4 +159,20 @@ export const fixStyleEntries = (styleEntries: [string, any][]) => {
       styleEntries.splice(styleEntries.indexOf(blockEnd), 1);
     }
   }
+  const overflow = styleEntries.find(([k]) => k === "overflow");
+  if (overflow) {
+    let overflowX = styleEntries.find(([k]) => k === "overflowX");
+    if (!overflowX) {
+      overflowX = ["overflowX", undefined];
+      styleEntries.push(overflowX);
+    }
+    overflowX[1] = overflowX[1] ?? overflow[1];
+    let overflowY = styleEntries.find(([k]) => k === "overflowY");
+    if (!overflowY) {
+      overflowY = ["overflowY", undefined];
+      styleEntries.push(overflowY);
+    }
+    overflowY[1] = overflowY[1] ?? overflow[1];
+    styleEntries.splice(styleEntries.indexOf(overflow), 1);
+  }
 };

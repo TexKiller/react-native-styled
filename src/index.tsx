@@ -134,6 +134,25 @@ function styled<
         ? props.style.reduce((s, c) => ({ ...c, ...s }), {})
         : (props.style ?? {}),
     );
+    const overflowX = styleEntries.find(([k]) => k === "overflowX");
+    if (overflowX) {
+      if (overflowX[1] === "scroll") {
+        OriginalComponent = RNScrollView as any;
+        (props as any).horizontal = true;
+      }
+      styleEntries.splice(styleEntries.indexOf(overflowX), 1);
+    }
+    const overflowY = styleEntries.find(([k]) => k === "overflowY");
+    if (overflowY) {
+      if (overflowY[1] === "scroll") {
+        OriginalComponent = RNScrollView as any;
+        (props as any).horizontal = false;
+      }
+      styleEntries.splice(styleEntries.indexOf(overflowY), 1);
+    }
+    if ([overflowX?.[1], overflowY?.[1]].includes("hidden")) {
+      styleEntries.push(["overflow", "hidden"]);
+    }
     const newVars = styleEntries.filter(([k]) => k.startsWith("-"));
     const textProps = styleEntries.filter(([k]) =>
       textProperties.includes(k as any),
